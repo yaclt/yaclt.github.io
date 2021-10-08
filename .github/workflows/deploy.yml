@@ -15,7 +15,9 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v1
       - name: Build
-        run: yarn build
+        run: |
+          yarn
+          yarn build
       - name: Deploy
         if: success()
         uses: crazy-max/ghaction-github-pages@v2
