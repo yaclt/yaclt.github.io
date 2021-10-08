@@ -6,4 +6,4 @@ echo -e "---\nsidebar_position: 2\ntitle: Commands\n---\n" >docs/yaclt/commands.
 curl -s "https://raw.githubusercontent.com/yaclt/yaclt/$PKG_VERSION/docs/COMMANDS.md" >>docs/yaclt/commands.md
 echo -e "---\nsidebar_position: 3\n---\n" >docs/yaclt/handlebars-templates.md
 curl -s "https://raw.githubusercontent.com/yaclt/yaclt/$PKG_VERSION/docs/handlebars-templates.md" >>docs/yaclt/handlebars-templates.md
-curl -s "https://raw.githubusercontent.com/yaclt/yaclt.nvim/master/README.md" >>docs/yaclt.nvim/intro.md
+curl -s "https://raw.githubusercontent.com/yaclt/yaclt.nvim/master/README.md" >docs/yaclt.nvim/intro.md
