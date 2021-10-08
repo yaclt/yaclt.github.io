@@ -12,9 +12,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-      - uses: sterlingwes/gh-pages-deploy-action@v1.1
+      - name: Checkout
+        uses: actions/checkout@v1
+      - name: Build
+        run: yarn build
+      - name: Deploy
+        if: success()
+        uses: crazy-max/ghaction-github-pages@v2
         with:
-          access-token: ${{ secrets.GITHUB_TOKEN }}
-          source-directory: public
-          build-command: yarn build
+          target_branch: public
+          build_dir: yarn build
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
