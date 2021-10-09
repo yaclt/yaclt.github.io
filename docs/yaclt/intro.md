@@ -48,7 +48,3 @@ for example, if you'd like to write some custom logic to parse the next release 
 
 For options which are Handlebars templates (e.g. `--format`, `--releaseBranchPattern`, or `--changelogTemplate`), you may specify a filepath instead of a literal template string.
 The CLI will check if the argument is a filepath to a file that exists, and if so, read the template from that file.
-
-### Configuration Recipes
-
-Some common configuration recipes can be found in the [wiki](https://github.com/mrjones2014/yaclt/wiki/Common-Configuration-Recipes).
