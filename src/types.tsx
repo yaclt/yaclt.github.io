@@ -1,3 +1,5 @@
+import { createStore } from 'solid-js/store'
+
 export type Language = 'JavaScript / TypeScript'
 
 class UniqueID {
@@ -7,6 +9,7 @@ class UniqueID {
 	get id() {
 		return this._id
 	}
+
 	constructor(id: string) {
 		if (UniqueID.#unique.includes(id)) {
 			throw new Error('ID already exists')
@@ -14,10 +17,14 @@ class UniqueID {
 		UniqueID.#unique.push(id)
 		this._id = id
 	}
+
+	toString() {
+		return this._id
+	}
 }
 
+const [assignments, setAssignments] = createStore<Assignment[]>([])
 export abstract class Assignment {
-	static #assignments: Assignment[] = []
 	#_key: UniqueID
 	#_title: string
 	#_label: string
@@ -40,10 +47,10 @@ export abstract class Assignment {
 	}
 
 	static get assignments() {
-		return structuredClone(Assignment.#assignments)
+		return assignments
 	}
 	static getAssignment(key: string) {
-		const assignment = Assignment.#assignments.find((assignment) => assignment.key.id === key)
+		const assignment = assignments.find((assignment) => assignment.key.id === key)
 		if (!assignment) {
 			throw new Error('Assignment not found')
 		}
@@ -69,6 +76,6 @@ export abstract class Assignment {
 		this.#_label = label
 		this.#_language = language
 		this.#_assignment = assignment
-		Assignment.#assignments.push(this)
+		setAssignments((store) => [...store, this])
 	}
 }
