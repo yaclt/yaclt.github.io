@@ -1,0 +1,24 @@
+/* @refresh reload */
+import { render } from "solid-js/web";
+import { Route, Router, type RouteSectionProps } from "@solidjs/router";
+import Home from "./routes/Home.tsx";
+import Assignment from "./routes/Assignment.tsx";
+
+const root = (props: RouteSectionProps<unknown>) => (
+	<>
+		<header>
+			<h1>Learn to code</h1>
+		</header>
+		<main>
+			{props.children}
+		</main>
+	</>
+);
+
+render(() => (
+	<Router root={root}>
+		<Route path="" component={Home} />
+		<Route path="Assignment/:assignment" component={Assignment} />
+		<Route path="*missingPage" component={Home} />
+	</Router>
+), document.body!);
