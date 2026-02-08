@@ -1,8 +1,9 @@
 /* @refresh reload */
-import { render } from "solid-js/web";
-import { Route, Router, type RouteSectionProps } from "@solidjs/router";
-import Home from "./routes/Home.tsx";
-import Assignment from "./routes/Assignment.tsx";
+import { render } from 'solid-js/web'
+import { Route, Router, type RouteSectionProps } from '@solidjs/router'
+import Home from './routes/Home.tsx'
+import Assignment from './routes/Assignment.tsx'
+import './AssignmentBuilder.tsx'
 
 const root = (props: RouteSectionProps<unknown>) => (
 	<>
@@ -13,12 +14,12 @@ const root = (props: RouteSectionProps<unknown>) => (
 			{props.children}
 		</main>
 	</>
-);
+)
 
 render(() => (
 	<Router root={root}>
-		<Route path="" component={Home} />
-		<Route path="Assignment/:assignment" component={Assignment} />
-		<Route path="*missingPage" component={Home} />
+		<Route path='' component={Home} />
+		<Route path='Assignment/:assignment' component={Assignment} />
+		<Route path='*missingPage' component={Home} />
 	</Router>
-), document.body!);
+), document.body!)

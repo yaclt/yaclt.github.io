@@ -1,13 +1,13 @@
-import { useParams } from "@solidjs/router";
+import { useParams } from '@solidjs/router'
+import { Assignment } from '../types.tsx'
 
 export default () => {
 	function getAssignment() {
-		return useParams().assignment;
+		return Assignment.getAssignment(useParams().assignment ?? '').title
 	}
 	return (
-		<div style="text-align: center">
-			<h1>Assignment</h1>
-			<h2>Author: {getAssignment()}</h2>
+		<div style='text-align: center'>
+			<h1>Assignment: {getAssignment()}</h1>
 		</div>
-	);
-};
+	)
+}
