@@ -71,6 +71,10 @@ export abstract class Assignment {
 		) {
 			throw new Error('Key is not a valid UUID')
 		}
+		if (assignment.length < 2) {
+			throw new Error('Assignment must have at least 2 strings')
+		}
+		assignment = assignment.map((segment) => segment.trim())
 		this.#_key = new UniqueID(key)
 		this.#_title = title
 		this.#_label = label
