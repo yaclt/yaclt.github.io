@@ -30,6 +30,7 @@ export abstract class Assignment {
 	#_label: string
 	#_language: Language
 	#_assignment: string[]
+	#_answer: number | string | boolean | null | object
 	get key() {
 		return this.#_key
 	}
@@ -44,6 +45,15 @@ export abstract class Assignment {
 	}
 	get assignment() {
 		return this.#_assignment.slice()
+	}
+	validate(answer: unknown) {
+		if (answer === undefined) {
+			return false
+		}
+		if (![typeof this.#_answer, typeof answer].find((type) => type !== 'object')) {
+			return JSON.stringify(this.#_answer) === JSON.stringify(answer)
+		}
+		return this.#_answer === answer
 	}
 
 	static get assignments() {
@@ -63,6 +73,7 @@ export abstract class Assignment {
 		label: string,
 		language: Language,
 		assignment: string[],
+		answer: unknown,
 	) {
 		if (
 			!key.match(
@@ -80,6 +91,7 @@ export abstract class Assignment {
 		this.#_label = label
 		this.#_language = language
 		this.#_assignment = assignment
+		this.#_answer = answer
 		setAssignments((store) => [...store, this])
 	}
 }
