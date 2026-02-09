@@ -1,6 +1,7 @@
 import { useParams } from '@solidjs/router'
-import { For } from 'solid-js'
-import { Assignment } from '../types.tsx'
+import { ErrorBoundary, For } from 'solid-js'
+import { A } from '@solidjs/router'
+import { Assignment, AssignmentNotFoundError } from '../types.tsx'
 import { Agent, CreateDataProperty, Get, ManagedRealm, setSurroundingAgent, Value } from '@magic-works/engine262'
 
 export default () => {
@@ -19,24 +20,53 @@ export default () => {
 	console.log(realm.evaluateScript('1 + 1').Value.value)
 	function getAssignment() {
 		const assignmentKey = useParams().path?.split('/').at(-1) ?? ''
-		try {
-			return Assignment.getAssignment(assignmentKey)
-		} catch (_error) {
-			return (
-				<div>
-					Assignment not found
-					<br />
-					<a href='/'>Go back</a>
-				</div>
-			)
+		return Assignment.getAssignment(assignmentKey)
+	}
+	function updateSegment(index: number, value: string) {
+		setAssignments((store) => {
+			const newStore = [...store]
+			newStore[index] = value
+			return newStore
+		})
+	}
+	function error(err: Error) {
+		switch (err.constructor) {
+			case AssignmentNotFoundError:
+				return (
+					<div>
+						Could not find assignment
+						<br />
+						<A href='/'>Go back</A>
+					</div>
+				)
+			default:
+				return (
+					<div>
+						An error occurred
+						<br />
+						<A href='/'>Go back</A>
+					</div>
+				)
 		}
 	}
 	return (
 		<div style='text-align: center'>
-			<h1>Assignment: {getAssignment()?.title}</h1>
-			<For each={getAssignment()?.assignment}>
-				{(line) => <textarea value={line} />}
-			</For>
+			<ErrorBoundary fallback={error}>
+				<h1>Assignment: {getAssignment()?.title}</h1>
+				<div style='display: flex; flex-direction: column; gap: 1rem;'>
+					<div>
+						<p>Time taken: {tick} ticks</p>
+					</div>
+					<ErrorBoundary fallback={error}>
+						<For each={getAssignment()?.segments}>
+							{(line, index) => <textarea disabled={index() % 2 === 0} value={line()} />}
+						</For>
+						<output>
+							<p>Answer: {getAssignment()?.validate('answer')}</p>
+						</output>
+					</ErrorBoundary>
+				</div>
+			</ErrorBoundary>
 		</div>
 	)
 }

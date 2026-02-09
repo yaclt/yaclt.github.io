@@ -1,4 +1,6 @@
 import { createStore } from 'solid-js/store'
+import { createSignal } from 'solid-js'
+import type { Accessor } from 'solid-js'
 
 export type Language = 'JavaScript / TypeScript'
 
@@ -23,13 +25,19 @@ class UniqueID {
 	}
 }
 
+export class AssignmentNotFoundError extends Error {
+	constructor(key: string) {
+		super(`Assignment not found: ${key}`)
+	}
+}
+
 const [assignments, setAssignments] = createStore<Assignment[]>([])
 export abstract class Assignment {
 	#_key: UniqueID
 	#_title: string
 	#_label: string
 	#_language: Language
-	#_assignment: string[]
+	#_segments: Accessor<string>[]
 	#_answer: number | string | boolean | null | object
 	get key() {
 		return this.#_key
@@ -43,8 +51,8 @@ export abstract class Assignment {
 	get language() {
 		return this.#_language
 	}
-	get assignment() {
-		return this.#_assignment.slice()
+	get segments() {
+		return this.#_segments
 	}
 	validate(answer: unknown) {
 		if (answer === undefined) {
@@ -62,7 +70,7 @@ export abstract class Assignment {
 	static getAssignment(key: string) {
 		const assignment = assignments.find((assignment) => assignment.key.id === key)
 		if (!assignment) {
-			throw new Error('Assignment not found')
+			throw new AssignmentNotFoundError(key)
 		}
 		return assignment
 	}
@@ -73,7 +81,7 @@ export abstract class Assignment {
 		label: string,
 		language: Language,
 		assignment: string[],
-		answer: unknown,
+		answer: number | string | boolean | null | object,
 	) {
 		if (
 			!key.match(
@@ -85,13 +93,28 @@ export abstract class Assignment {
 		if (assignment.length < 2) {
 			throw new Error('Assignment must have at least 2 strings')
 		}
-		assignment = assignment.map((segment) => segment.trim())
 		this.#_key = new UniqueID(key)
 		this.#_title = title
 		this.#_label = label
 		this.#_language = language
-		this.#_assignment = assignment
 		this.#_answer = answer
+		this.#_segments = []
+		assignment.forEach((segment, index) => {
+			const [segmentSignal, setSegmentSignal] = createSignal(segment.trim())
+			const s: {
+				get: Accessor<string>
+				set: (value: string) => void
+			} = {
+				get: () => segmentSignal(),
+				set: (value) => {
+					if (index % 2 === 0) {
+						throw new Error('Cannot set a read-only segment')
+					}
+					setSegmentSignal(value)
+				},
+			}
+			this.#_segments.push(s.get)
+		})
 		setAssignments((store) => [...store, this])
 	}
 }

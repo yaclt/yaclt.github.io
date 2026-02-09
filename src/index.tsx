@@ -1,10 +1,14 @@
 /* @refresh reload */
+import { assignmentsReady } from './AssignmentWrapper.tsx'
 import { render } from 'solid-js/web'
 import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 import Home from './routes/Home.tsx'
 import Assignment from './routes/Assignment.tsx'
-import './AssignmentWrapper.tsx'
 import Playground from './routes/Playground.tsx'
+
+if (!assignmentsReady) {
+	throw new Error('Assignments not ready')
+}
 
 const root = (props: RouteSectionProps<unknown>) => (
 	<>

@@ -11,4 +11,4 @@ assignmentPaths.forEach((path) => {
 	imports.push(import(path).then((module) => new module.default()))
 })
 
-export { imports }
+export const assignmentsReady = await Promise.allSettled(imports).then((results) => results.find((result) => result.status === 'rejected') === undefined)
