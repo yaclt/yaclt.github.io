@@ -3,20 +3,23 @@ import { For } from 'solid-js'
 import { Assignment } from '../types.tsx'
 
 export default () => {
-	const groupedAssignments: Record<string, Record<string, Assignment[]>> = {}
-	Assignment.assignments.forEach((assignment) => {
-		if (!groupedAssignments[assignment.language]) {
-			groupedAssignments[assignment.language] = {
-				[assignment.label]: [assignment],
+	function init() {
+		const groupedAssignments: Record<string, Record<string, Assignment[]>> = {}
+		Assignment.assignments.forEach((assignment) => {
+			if (!groupedAssignments[assignment.language]) {
+				groupedAssignments[assignment.language] = {
+					[assignment.label]: [assignment],
+				}
+			} else {
+				groupedAssignments[assignment.language][assignment.label] = [...(groupedAssignments[assignment.language][assignment.label] || []), assignment]
 			}
-		} else {
-			groupedAssignments[assignment.language][assignment.label] = [...(groupedAssignments[assignment.language][assignment.label] || []), assignment]
-		}
-	})
+		})
+		return Object.entries(groupedAssignments)
+	}
 	return (
 		<div style='width: fit-content; margin-left: auto; margin-right: auto;'>
 			<h1 style='text-align: center;'>Assignments</h1>
-			<For each={Object.entries(groupedAssignments)}>
+			<For each={init()}>
 				{([language, labels]) => (
 					<ol>
 						<h2>{language}</h2>
