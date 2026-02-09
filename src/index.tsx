@@ -3,7 +3,7 @@ import { render } from 'solid-js/web'
 import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 import Home from './routes/Home.tsx'
 import Assignment from './routes/Assignment.tsx'
-import './AssignmentBuilder.tsx'
+import './AssignmentWrapper.tsx'
 import Playground from './routes/Playground.tsx'
 
 const root = (props: RouteSectionProps<unknown>) => (
