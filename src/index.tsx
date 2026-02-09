@@ -9,7 +9,7 @@ import Playground from './routes/Playground.tsx'
 const root = (props: RouteSectionProps<unknown>) => (
 	<>
 		<header>
-			<h1>Learn to code</h1>
+			<h1>%THIS_SITE_NAME%</h1>
 			<nav style='display: flex; gap: 1rem;'>
 				<A href='/'>Home</A>
 				<A href='/Playground'>Playground</A>
