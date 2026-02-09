@@ -19,7 +19,7 @@ const root = (props: RouteSectionProps<unknown>) => (
 render(() => (
 	<Router root={root}>
 		<Route path='' component={Home} />
-		<Route path='Assignment/:assignment' component={Assignment} />
+		<Route path='Assignment/*path' component={Assignment} />
 		<Route path='*missingPage' component={Home} />
 	</Router>
 ), document.body!)

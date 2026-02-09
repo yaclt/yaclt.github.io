@@ -7,7 +7,7 @@ export default () => {
 			<ul>
 				{Assignment.assignments.map((assignment) => (
 					<li>
-						<a href={`/assignment/${assignment.key}`}>{assignment.title}</a>
+						<a href={`/Assignment/${assignment.language.replaceAll(' / ', '-')}/${assignment.label}/${assignment.title}/${assignment.key}`}>{assignment.title}</a>
 					</li>
 				))}
 			</ul>
