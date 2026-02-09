@@ -4,6 +4,7 @@
     "jsr:@std/assert@*": "1.0.18",
     "jsr:@std/assert@1.0.18": "1.0.18",
     "jsr:@std/internal@^1.0.12": "1.0.12",
+    "npm:@magic-works/engine262@^0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226": "0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226",
     "npm:@solidjs/router@~0.15.4": "0.15.4_solid-js@1.9.10__seroval@1.3.2",
     "npm:@types/node@^24.10.1": "24.10.8",
     "npm:solid-js@^1.9.10": "1.9.10_seroval@1.3.2",
@@ -315,6 +316,10 @@
         "@jridgewell/resolve-uri",
         "@jridgewell/sourcemap-codec"
       ]
+    },
+    "@magic-works/engine262@0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226": {
+      "integrity": "sha512-8f6Yq6hcPWJk8sAszcif93onvCrbCRxhg6q3lojoZTl6rTGB78LOk3zms8MRa2jNgoQQ5V1ljkSukq0ws+hz5Q==",
+      "bin": true
     },
     "@rollup/rollup-android-arm-eabi@4.55.1": {
       "integrity": "sha512-9R0DM/ykwfGIlNu6+2U09ga0WXeZ9MRC2Ter8jnz8415VbuIykVuc6bhdrbORFZANDmTDvq26mJrEVTl8TdnDg==",
@@ -794,6 +799,7 @@
   "workspace": {
     "packageJson": {
       "dependencies": [
+        "npm:@magic-works/engine262@^0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226",
         "npm:@solidjs/router@~0.15.4",
         "npm:@types/node@^24.10.1",
         "npm:solid-js@^1.9.10",

@@ -43,7 +43,7 @@ export abstract class Assignment {
 		return this.#_language
 	}
 	get assignment() {
-		return this.#_assignment
+		return this.#_assignment.slice()
 	}
 
 	static get assignments() {
