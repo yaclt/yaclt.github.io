@@ -2,7 +2,9 @@ import { createStore } from 'solid-js/store'
 import { createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
 import { Engine262 } from './Engine262.tsx'
+import { encodeHex } from '@std/encoding'
 
+export const LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT = 'passed_assignment_:'
 export type Language = 'JavaScript / TypeScript'
 
 export const USER_ID = localStorage.getItem('USER_ID') ?? crypto.randomUUID()
@@ -89,6 +91,13 @@ export abstract class Assignment {
 			passed = this.#_answer === result
 		}
 		return { result, passed, ticks, error }
+	}
+	async getHashKey() {
+		const payload = [this.#_key.id, ...this.segments.filter((_s, index) => index % 2 === 0).map((segment) => segment.get())]
+		const messageBuffer = new TextEncoder().encode(payload.join('\n'))
+		const hashBuffer = await crypto.subtle.digest('SHA-256', messageBuffer)
+		const hash = encodeHex(hashBuffer)
+		return hash
 	}
 
 	static get assignments() {

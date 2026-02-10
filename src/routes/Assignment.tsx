@@ -1,13 +1,26 @@
 import { useParams } from '@solidjs/router'
 import { createMemo, createSignal, createUniqueId, ErrorBoundary, For, Show } from 'solid-js'
 import { A } from '@solidjs/router'
-import { Assignment, AssignmentNotFoundError, USER_ID } from '../types.tsx'
+import { Assignment, AssignmentNotFoundError, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, USER_ID } from '../types.tsx'
 
 export default () => {
 	const params = useParams()
 	const assignment = createMemo(() => {
 		const assignmentKey = params.path?.split('/').at(-1) ?? ''
-		return Assignment.getAssignment(assignmentKey)
+		const assignment = Assignment.getAssignment(assignmentKey)
+		assignment.getHashKey().then((hash) => {
+			const passedAssignment = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${hash}`)
+			if (passedAssignment) {
+				const passedAssignmentSegments = JSON.parse(passedAssignment)
+				passedAssignmentSegments.code.forEach((segment: string, index: number) => {
+					assignment.segments[index * 2 + 1].set(segment)
+				})
+				setTicks(passedAssignmentSegments.ticks)
+				setResult(passedAssignmentSegments.result)
+				setPassed(true)
+			}
+		})
+		return assignment
 	})
 	function error(err: Error) {
 		switch (err.constructor) {
@@ -45,6 +58,16 @@ export default () => {
 				headers: {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
+			})
+			assignment()?.getHashKey().then((hash) => {
+				localStorage.setItem(
+					`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${hash}`,
+					JSON.stringify({
+						code: a.segments.filter((_s, index) => index % 2).map((s) => s.get()),
+						ticks: v.ticks,
+						result: v.result,
+					}),
+				)
 			})
 		}
 	}
