@@ -55,6 +55,19 @@ export abstract class Assignment {
 		set: (value: string) => void
 	}[]
 	#_answer: number | string | boolean | null | object
+	#_hashKey: string = ''
+	get hashKey(): string {
+		if (!this.#_hashKey) {
+			throw new Error('Hash key not set')
+		}
+		return this.#_hashKey
+	}
+	set hashKey(hashKey: string) {
+		if (this.#_hashKey) {
+			throw new Error('Hash key already set')
+		}
+		this.#_hashKey = hashKey
+	}
 	get key() {
 		return this.#_key
 	}
@@ -91,13 +104,6 @@ export abstract class Assignment {
 			passed = this.#_answer === result
 		}
 		return { result, passed, ticks, error }
-	}
-	async getHashKey() {
-		const payload = [this.#_key.id, ...this.segments.filter((_s, index) => index % 2 === 0).map((segment) => segment.get())]
-		const messageBuffer = new TextEncoder().encode(payload.join('\n'))
-		const hashBuffer = await crypto.subtle.digest('SHA-256', messageBuffer)
-		const hash = encodeHex(hashBuffer)
-		return hash
 	}
 
 	static get assignments() {

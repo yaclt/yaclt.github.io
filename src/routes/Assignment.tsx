@@ -8,18 +8,16 @@ export default () => {
 	const assignment = createMemo(() => {
 		const assignmentKey = params.path?.split('/').at(-1) ?? ''
 		const assignment = Assignment.getAssignment(assignmentKey)
-		assignment.getHashKey().then((hash) => {
-			const passedAssignment = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${hash}`)
-			if (passedAssignment) {
-				const passedAssignmentSegments = JSON.parse(passedAssignment)
-				passedAssignmentSegments.code.forEach((segment: string, index: number) => {
-					assignment.segments[index * 2 + 1].set(segment)
-				})
-				setTicks(passedAssignmentSegments.ticks)
-				setResult(passedAssignmentSegments.result)
-				setPassed(true)
-			}
-		})
+		const passedAssignment = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${assignment.hashKey}`)
+		if (passedAssignment) {
+			const passedAssignmentSegments = JSON.parse(passedAssignment)
+			passedAssignmentSegments.code.forEach((segment: string, index: number) => {
+				assignment.segments[index * 2 + 1].set(segment)
+			})
+			setTicks(passedAssignmentSegments.ticks)
+			setResult(passedAssignmentSegments.result)
+			setPassed(true)
+		}
 		return assignment
 	})
 	function error(err: Error) {
@@ -59,16 +57,14 @@ export default () => {
 					'Content-Type': 'application/x-www-form-urlencoded',
 				},
 			})
-			assignment()?.getHashKey().then((hash) => {
-				localStorage.setItem(
-					`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${hash}`,
-					JSON.stringify({
-						code: a.segments.filter((_s, index) => index % 2).map((s) => s.get()),
-						ticks: v.ticks,
-						result: v.result,
-					}),
-				)
-			})
+			localStorage.setItem(
+				`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${a.hashKey}`,
+				JSON.stringify({
+					code: a.segments.filter((_s, index) => index % 2).map((s) => s.get()),
+					ticks: v.ticks,
+					result: v.result,
+				}),
+			)
 		}
 	}
 	const [result, setResult] = createSignal()

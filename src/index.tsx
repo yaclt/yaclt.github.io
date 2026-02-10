@@ -5,6 +5,7 @@ import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 import Home from './routes/Home.tsx'
 import Assignment from './routes/Assignment.tsx'
 import Playground from './routes/Playground.tsx'
+import './index.css'
 
 if (!assignmentsReady) {
 	throw new Error('Assignments not ready')
