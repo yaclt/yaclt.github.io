@@ -1,7 +1,7 @@
 import { useParams } from '@solidjs/router'
 import { createMemo, createSignal, createUniqueId, ErrorBoundary, For, Show } from 'solid-js'
 import { A } from '@solidjs/router'
-import { Assignment, AssignmentNotFoundError } from '../types.tsx'
+import { Assignment, AssignmentNotFoundError, USER_ID } from '../types.tsx'
 
 export default () => {
 	const params = useParams()
@@ -35,8 +35,18 @@ export default () => {
 		if (!a) return
 		const v = a.validate()
 		setResult(v.error || v.result)
-		setPassed(v.passed)
 		setTicks(v.ticks)
+		setPassed(v.passed)
+		if (v.passed) {
+			const userTicks = ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)
+			fetch(`https://docs.google.com/forms/d/e/1FAIpQLSf8sJDTIXh8UXZzQUVkVBDMayUCrTg4fThHBJg2JNqn37dxyg/formResponse?entry.377919147=${USER_ID}&entry.850045796=${a.key.id}&entry.1964957096=${userTicks}&submit=Submit`, {
+				method: 'GET',
+				mode: 'no-cors',
+				headers: {
+					'Content-Type': 'application/x-www-form-urlencoded',
+				},
+			})
+		}
 	}
 	const [result, setResult] = createSignal()
 	const [ticks, setTicks] = createSignal<number[]>([])
@@ -47,7 +57,7 @@ export default () => {
 				<h1>Assignment: {assignment()?.title}</h1>
 				<div style='display: flex; flex-direction: column;'>
 					<div>
-						<p>Time taken: {ticks().filter((_t, index) => index % 2 === 1).reduce((a, b) => a + b, 0)} ticks ({ticks().reduce((a, b) => a + b, 0)} total)</p>
+						<p>Time taken: {ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)} ticks ({ticks().reduce((a, b) => a + b, 0)} total)</p>
 					</div>
 					<ErrorBoundary fallback={error}>
 						<For each={assignment()?.segments}>

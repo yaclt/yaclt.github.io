@@ -5,6 +5,16 @@ import { Engine262 } from './Engine262.tsx'
 
 export type Language = 'JavaScript / TypeScript'
 
+export const USER_ID = localStorage.getItem('USER_ID') ?? crypto.randomUUID()
+localStorage.setItem('USER_ID', USER_ID)
+fetch(`https://docs.google.com/forms/d/e/1FAIpQLSdefkSHYqvtUU2r-Yv-co-izV2bRvwNqGX138fjLiO-vaP-Yw/formResponse?entry.2045721106=${USER_ID}&submit=Submit`, {
+	method: 'GET',
+	mode: 'no-cors',
+	headers: {
+		'Content-Type': 'application/x-www-form-urlencoded',
+	},
+})
+
 class UniqueID {
 	static #unique: string[] = []
 
