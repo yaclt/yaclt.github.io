@@ -63,14 +63,16 @@ export abstract class Assignment {
 		let ticks = 0
 		let result: unknown
 		let passed: boolean
+		let error: Error | undefined
 		this.#_segments.forEach((segment, index) => {
+			if (error) return
 			const res = engine.evaluate((index === 0 ? '' : '\n') + segment.get())
-			const r = res.result
 			const t = res.ticks
-			if (index % 2 === 0) {
+			result = res.result
+			error = res.error
+			if (index % 2 === 1) {
 				ticks += t
 			}
-			result = r?.Value?.value
 		})
 		if (result === undefined) {
 			passed = false
@@ -79,7 +81,7 @@ export abstract class Assignment {
 		} else {
 			passed = this.#_answer === result
 		}
-		return { result, passed, ticks }
+		return { result, passed, ticks, error }
 	}
 
 	static get assignments() {

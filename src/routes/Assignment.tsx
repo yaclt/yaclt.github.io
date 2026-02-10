@@ -1,13 +1,14 @@
 import { useParams } from '@solidjs/router'
-import { createSignal, ErrorBoundary, For, Show } from 'solid-js'
+import { createMemo, createSignal, ErrorBoundary, For, Show } from 'solid-js'
 import { A } from '@solidjs/router'
 import { Assignment, AssignmentNotFoundError } from '../types.tsx'
 
 export default () => {
-	function getAssignment() {
-		const assignmentKey = useParams().path?.split('/').at(-1) ?? ''
+	const params = useParams()
+	const assignment = createMemo(() => {
+		const assignmentKey = params.path?.split('/').at(-1) ?? ''
 		return Assignment.getAssignment(assignmentKey)
-	}
+	})
 	function error(err: Error) {
 		switch (err.constructor) {
 			case AssignmentNotFoundError:
@@ -30,12 +31,12 @@ export default () => {
 	}
 	function validate(value: string, set: (value: string) => void) {
 		set(value)
-		const assignment = getAssignment()
-		if (!assignment) return
-		const { result, passed, ticks } = assignment.validate()
-		setResult(result)
-		setTicks(ticks)
-		setPassed(passed)
+		const a = assignment()
+		if (!a) return
+		const v = a.validate()
+		setResult(v.error || v.result)
+		setPassed(v.passed)
+		setTicks(v.ticks)
 	}
 	const [result, setResult] = createSignal()
 	const [ticks, setTicks] = createSignal(0)
@@ -43,13 +44,13 @@ export default () => {
 	return (
 		<div style='text-align: center'>
 			<ErrorBoundary fallback={error}>
-				<h1>Assignment: {getAssignment()?.title}</h1>
+				<h1>Assignment: {assignment()?.title}</h1>
 				<div style='display: flex; flex-direction: column; gap: 1rem;'>
 					<div>
 						<p>Time taken: {ticks()} ticks</p>
 					</div>
 					<ErrorBoundary fallback={error}>
-						<For each={getAssignment()?.segments}>
+						<For each={assignment()?.segments}>
 							{(segment, index) => <textarea disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />}
 						</For>
 						<p>

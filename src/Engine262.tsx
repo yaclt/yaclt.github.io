@@ -30,6 +30,11 @@ export class Engine262 {
 		let error
 		try {
 			result = this.#_realm.evaluateScript(script)
+			if (result.Type === 'throw') {
+				error = result.Value.ErrorData.value
+			} else {
+				result = result.Value?.value
+			}
 		} catch (err) {
 			error = err
 		}
