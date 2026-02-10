@@ -74,8 +74,7 @@ export default () => {
 							<Show when={passed()}>
 								✅
 							</Show>
-							Result:
-							<output>{result()?.toString()}</output>
+							Result:&nbsp;<output>{result()?.toString()}</output>
 						</p>
 					</ErrorBoundary>
 				</div>
