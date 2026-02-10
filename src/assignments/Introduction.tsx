@@ -2,9 +2,9 @@ import { Assignment } from '../types.tsx'
 
 const content = [
 	`/**
- * Hello World
+ * Hello World 🧑‍💻
  *
- * This is a simple introductory assignment to get you started with %THIS_SITE_NAME% and the JavaScript language.
+ * This is a simple introductory assignment to get you started with Yaclt and the JavaScript language.
  * This assignment is easy. You just need to add two numbers (a and b) and assign the result to the 'answer' variable. Do it however you want.
  */
 const a = 1
