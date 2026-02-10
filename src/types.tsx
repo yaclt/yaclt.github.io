@@ -60,19 +60,16 @@ export abstract class Assignment {
 	}
 	validate() {
 		const engine = new Engine262()
-		let ticks = 0
+		const ticks: number[] = []
 		let result: unknown
 		let passed: boolean
 		let error: Error | undefined
 		this.#_segments.forEach((segment, index) => {
 			if (error) return
 			const res = engine.evaluate((index === 0 ? '' : '\n') + segment.get())
-			const t = res.ticks
+			ticks.push(res.ticks)
 			result = res.result
 			error = res.error
-			if (index % 2 === 1) {
-				ticks += t
-			}
 		})
 		if (result === undefined) {
 			passed = false
