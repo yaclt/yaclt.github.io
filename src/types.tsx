@@ -1,6 +1,7 @@
 import { createStore } from 'solid-js/store'
 import { createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
+import { Engine262 } from './Engine262.tsx'
 
 export type Language = 'JavaScript / TypeScript'
 
@@ -37,7 +38,10 @@ export abstract class Assignment {
 	#_title: string
 	#_label: string
 	#_language: Language
-	#_segments: Accessor<string>[]
+	#_segments: {
+		get: Accessor<string>
+		set: (value: string) => void
+	}[]
 	#_answer: number | string | boolean | null | object
 	get key() {
 		return this.#_key
@@ -54,14 +58,28 @@ export abstract class Assignment {
 	get segments() {
 		return this.#_segments
 	}
-	validate(answer: unknown) {
-		if (answer === undefined) {
-			return false
+	validate() {
+		const engine = new Engine262()
+		let ticks = 0
+		let result: unknown
+		let passed: boolean
+		this.#_segments.forEach((segment, index) => {
+			const res = engine.evaluate((index === 0 ? '' : '\n') + segment.get())
+			const r = res.result
+			const t = res.ticks
+			if (index % 2 === 0) {
+				ticks += t
+			}
+			result = r?.Value?.value
+		})
+		if (result === undefined) {
+			passed = false
+		} else if (![typeof this.#_answer, typeof result].find((type) => type !== 'object')) {
+			passed = JSON.stringify(this.#_answer) === JSON.stringify(result)
+		} else {
+			passed = this.#_answer === result
 		}
-		if (![typeof this.#_answer, typeof answer].find((type) => type !== 'object')) {
-			return JSON.stringify(this.#_answer) === JSON.stringify(answer)
-		}
-		return this.#_answer === answer
+		return { result, passed, ticks }
 	}
 
 	static get assignments() {
@@ -100,7 +118,7 @@ export abstract class Assignment {
 		this.#_answer = answer
 		this.#_segments = []
 		assignment.forEach((segment, index) => {
-			const [segmentSignal, setSegmentSignal] = createSignal(segment.trim())
+			const [segmentSignal, setSegmentSignal] = createSignal(segment)
 			const s: {
 				get: Accessor<string>
 				set: (value: string) => void
@@ -113,7 +131,7 @@ export abstract class Assignment {
 					setSegmentSignal(value)
 				},
 			}
-			this.#_segments.push(s.get)
+			this.#_segments.push(s)
 		})
 		setAssignments((store) => [...store, this])
 	}
