@@ -13,7 +13,7 @@ if (!assignmentsReady) {
 const root = (props: RouteSectionProps<unknown>) => (
 	<>
 		<header>
-			<h1>%THIS_SITE_NAME%</h1>
+			<h1>🧑‍💻 Yaclt</h1>
 			<nav style='display: flex; gap: 1rem;'>
 				<A href='/'>Home</A>
 				<A href='/Playground'>Playground</A>
