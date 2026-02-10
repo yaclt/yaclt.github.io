@@ -5,6 +5,9 @@ import { Assignment, AssignmentNotFoundError, LOCAL_STORAGE_PREFIX_PASSED_ASSIGN
 
 export default () => {
 	const params = useParams()
+	const [result, setResult] = createSignal()
+	const [ticks, setTicks] = createSignal<number[]>([])
+	const [passed, setPassed] = createSignal(false)
 	const assignment = createMemo(() => {
 		const assignmentKey = params.path?.split('/').at(-1) ?? ''
 		const assignment = Assignment.getAssignment(assignmentKey)
@@ -67,9 +70,6 @@ export default () => {
 			)
 		}
 	}
-	const [result, setResult] = createSignal()
-	const [ticks, setTicks] = createSignal<number[]>([])
-	const [passed, setPassed] = createSignal(false)
 	return (
 		<div style='text-align: center'>
 			<ErrorBoundary fallback={error}>
