@@ -4,6 +4,7 @@ import type { Accessor } from 'solid-js'
 import { Engine262 } from './Engine262.tsx'
 
 export const LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT = 'passed_assignment_:'
+export const PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION: Assignment[] = []
 export type Language = 'JavaScript / TypeScript'
 
 export const USER_ID = localStorage.getItem('USER_ID') ?? crypto.randomUUID()

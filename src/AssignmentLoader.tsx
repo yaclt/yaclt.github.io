@@ -1,4 +1,4 @@
-import { Assignment } from './types.tsx'
+import { Assignment, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from './types.tsx'
 import { encodeHex } from '@std/encoding'
 
 const assignmentPaths = [
@@ -21,6 +21,9 @@ assignmentPaths.forEach((path) => {
 		import(path).then(async (module) => {
 			const assignment = new module.default()
 			assignment.hashKey = await getHashKey(assignment)
+			if (localStorage.getItem(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT + assignment.hashKey)) {
+				PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION.push(assignment)
+			}
 			return assignment
 		}),
 	)
