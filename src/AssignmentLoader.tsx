@@ -3,6 +3,7 @@ import { encodeHex } from '@std/encoding'
 
 const assignmentPaths = [
 	/*ASSIGNMENT_PATHS_BEGIN*/
+	'./assignments/For.tsx',
 	'./assignments/Introduction.tsx',
 	/*ASSIGNMENT_PATHS_END*/
 ]
