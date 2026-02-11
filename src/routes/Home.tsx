@@ -4,17 +4,7 @@ import { Assignment, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT } from '../types.tsx
 
 export default () => {
 	function init() {
-		const groupedAssignments: Record<string, Record<string, Assignment[]>> = {}
-		Assignment.assignments.forEach((assignment) => {
-			if (!groupedAssignments[assignment.language]) {
-				groupedAssignments[assignment.language] = {
-					[assignment.label]: [assignment],
-				}
-			} else {
-				groupedAssignments[assignment.language][assignment.label] = [...(groupedAssignments[assignment.language][assignment.label] || []), assignment]
-			}
-		})
-		return Object.entries(groupedAssignments)
+		return Object.entries(Assignment.assignments)
 	}
 	function passed(assignment: Assignment) {
 		return localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${assignment.hashKey}`) !== null

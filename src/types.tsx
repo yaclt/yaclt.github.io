@@ -2,7 +2,6 @@ import { createStore } from 'solid-js/store'
 import { createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
 import { Engine262 } from './Engine262.tsx'
-import { encodeHex } from '@std/encoding'
 
 export const LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT = 'passed_assignment_:'
 export type Language = 'JavaScript / TypeScript'
@@ -44,7 +43,10 @@ export class AssignmentNotFoundError extends Error {
 	}
 }
 
-const [assignments, setAssignments] = createStore<Assignment[]>([])
+const [assignments, setAssignments] = createStore<Record<Language, Record<string, Assignment[]>>>({
+	'JavaScript / TypeScript': {},
+})
+const flatAssignments: Assignment[] = []
 export abstract class Assignment {
 	#_key: UniqueID
 	#_title: string
@@ -110,7 +112,7 @@ export abstract class Assignment {
 		return assignments
 	}
 	static getAssignment(key: string) {
-		const assignment = assignments.find((assignment) => assignment.key.id === key)
+		const assignment = flatAssignments.find((assignment) => assignment.key.id === key)
 		if (!assignment) {
 			throw new AssignmentNotFoundError(key)
 		}
@@ -119,9 +121,9 @@ export abstract class Assignment {
 
 	constructor(
 		key: string,
-		title: string,
-		label: string,
 		language: Language,
+		label: string,
+		title: string,
 		assignment: string[],
 		answer: number | string | boolean | null | object,
 	) {
@@ -157,6 +159,13 @@ export abstract class Assignment {
 			}
 			this.#_segments.push(s)
 		})
-		setAssignments((store) => [...store, this])
+		flatAssignments.push(this)
+		setAssignments((store) => {
+			if (!store[language][label]) {
+				store[language][label] = []
+			}
+			store[language][label].push(this)
+			return store
+		})
 	}
 }

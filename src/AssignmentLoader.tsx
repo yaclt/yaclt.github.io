@@ -26,4 +26,10 @@ assignmentPaths.forEach((path) => {
 	)
 })
 
-export const assignmentsReady = await Promise.allSettled(imports).then((results) => results.find((result) => result.status === 'rejected') === undefined)
+export const assignmentsReady = await Promise.allSettled(imports).then((results) => {
+	const rejected = results.find((result) => result.status === 'rejected')
+	if (rejected === undefined) {
+		return true
+	}
+	throw new Error(`Failed to load assignment: ${rejected.reason.message}`)
+})
