@@ -85,10 +85,12 @@ export default () => {
 							<For each={assignment()?.segments}>
 								{(segment, index) => (
 									<>
-										<textarea id={createUniqueId()} style='width: 100%; resize: none; scrollbar-width: none;' wrap='off' rows={segment.get().split('\n').length} disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />
-										<Show when={ticks()[index()]}>
-											<i style='align-content: center; text-align: right;'>{ticks()[index()]}</i>
-										</Show>
+										<textarea id={createUniqueId()} style='width: 100%; resize: none; scrollbar-width: none; tab-size: 4;' wrap='off' rows={segment.get().split('\n').length} disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />
+										<i style='align-content: center; text-align: right;'>
+											<Show when={ticks()[index()]}>
+												{ticks()[index()]}
+											</Show>
+										</i>
 									</>
 								)}
 							</For>
