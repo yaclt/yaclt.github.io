@@ -79,16 +79,20 @@ export default () => {
 						<p>Time taken: {ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)} ticks ({ticks().reduce((a, b) => a + b, 0)} total)</p>
 					</div>
 					<ErrorBoundary fallback={error}>
-						<For each={assignment()?.segments}>
-							{(segment, index) => (
-								<div style='display: flex; gap: 1rem; width: 100%;'>
-									<textarea id={createUniqueId()} disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />
-									<Show when={ticks()[index()]}>
-										<i>{ticks()[index()]}</i>
-									</Show>
-								</div>
-							)}
-						</For>
+						<div style='display: grid; grid-template-columns: 1fr auto;'>
+							<div />
+							<div>Ticks:</div>
+							<For each={assignment()?.segments}>
+								{(segment, index) => (
+									<>
+										<textarea id={createUniqueId()} style='width: 100%; resize: none; scrollbar-width: none;' wrap='off' rows={segment.get().split('\n').length} disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />
+										<Show when={ticks()[index()]}>
+											<i style='align-content: center; text-align: right;'>{ticks()[index()]}</i>
+										</Show>
+									</>
+								)}
+							</For>
+						</div>
 						<p>
 							<Show when={passed()}>
 								✅
