@@ -5,6 +5,7 @@ import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 import Home from './routes/Home.tsx'
 import Assignment from './routes/Assignment.tsx'
 import Playground from './routes/Playground.tsx'
+import AssignmentBuilder from './routes/AssignmentBuilder.tsx'
 import './index.css'
 
 if (!assignmentsReady) {
@@ -31,6 +32,7 @@ render(() => (
 		<Route path='' component={Home} />
 		<Route path='Assignment/*path' component={Assignment} />
 		<Route path='Playground' component={Playground} />
+		<Route path='builder' component={AssignmentBuilder} />
 		<Route path='*missingPage' component={Home} />
 	</Router>
 ), document.body!)
