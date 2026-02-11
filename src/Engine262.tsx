@@ -1,6 +1,6 @@
 import { Agent, CreateDataProperty, Get, ManagedRealm, setSurroundingAgent, Value } from '@magic-works/engine262'
 
-false || Agent || CreateDataProperty || Get || setSurroundingAgent || Value
+false || CreateDataProperty || Get || Value
 
 setSurroundingAgent(
 	new Agent({
