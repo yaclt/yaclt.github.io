@@ -1,5 +1,5 @@
 /* @refresh reload */
-import { assignmentsReady } from './AssignmentWrapper.tsx'
+import { assignmentsReady } from './AssignmentLoader.tsx'
 import { render } from 'solid-js/web'
 import { A, Route, Router, type RouteSectionProps } from '@solidjs/router'
 import Home from './routes/Home.tsx'
