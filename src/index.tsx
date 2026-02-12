@@ -18,7 +18,7 @@ const root = (props: RouteSectionProps<unknown>) => (
 			<h1>🧑‍💻 Yaclt</h1>
 			<nav style='display: flex; gap: 1rem;'>
 				<A href='/'>Home</A>
-				<A href='/Playground'>Playground</A>
+				<A style='display: none; /* Hide playground for now */' href='/Playground'>Playground</A>
 			</nav>
 		</header>
 		<main>
