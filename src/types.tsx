@@ -44,6 +44,32 @@ export class AssignmentNotFoundError extends Error {
 	}
 }
 
+const labels: Label[] = []
+export class Label {
+	#_name: string
+	#_prerequisites: Label[]
+	get name() {
+		return this.#_name
+	}
+	get sortNumber() {
+		return labels.findIndex((label) => label === this)
+	}
+	get isUnlocked() {
+		const prerequisite = flatAssignments.find((assignment) => this.#_prerequisites.includes(assignment.label) && !assignment.passed)
+		return !prerequisite
+	}
+	static getByName(name: string) {
+		return labels.find((label) => label.name === name)
+	}
+	constructor(name: string, prerequisites: Label[]) {
+		this.#_name = name
+		this.#_prerequisites = prerequisites
+		labels.push(this)
+	}
+}
+export const Introduction = new Label('Introduction', [])
+export const JS_Fundamentals = new Label('Fundamentals', [Introduction])
+
 const [assignments, setAssignments] = createStore<Record<Language, Record<string, Assignment[]>>>({
 	'JavaScript / TypeScript': {},
 })
@@ -51,7 +77,7 @@ const flatAssignments: Assignment[] = []
 export abstract class Assignment {
 	#_key: UniqueID
 	#_title: string
-	#_label: string
+	#_label: Label
 	#_language: Language
 	#_segments: {
 		get: Accessor<string>
@@ -59,6 +85,7 @@ export abstract class Assignment {
 	}[]
 	#_answer: number | string | boolean | null | object
 	#_hashKey: string = ''
+	#_passed: boolean = false
 	get hashKey(): string {
 		if (!this.#_hashKey) {
 			throw new Error('Hash key not set')
@@ -70,6 +97,7 @@ export abstract class Assignment {
 			throw new Error('Hash key already set')
 		}
 		this.#_hashKey = hashKey
+		this.#_passed = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${this.#_hashKey}`) !== null
 	}
 	get key() {
 		return this.#_key
@@ -85,6 +113,9 @@ export abstract class Assignment {
 	}
 	get segments() {
 		return this.#_segments
+	}
+	get passed() {
+		return this.#_passed
 	}
 	validate() {
 		const engine = new Engine262()
@@ -106,6 +137,9 @@ export abstract class Assignment {
 		} else {
 			passed = this.#_answer === result
 		}
+		if (passed) {
+			this.#_passed = true
+		}
 		return { result, passed, ticks, error }
 	}
 
@@ -119,11 +153,14 @@ export abstract class Assignment {
 		}
 		return assignment
 	}
+	static flat() {
+		return [...flatAssignments]
+	}
 
 	constructor(
 		key: string,
 		language: Language,
-		label: string,
+		label: Label,
 		title: string,
 		assignment: string[],
 		answer: number | string | boolean | null | object,
@@ -162,10 +199,10 @@ export abstract class Assignment {
 		})
 		flatAssignments.push(this)
 		setAssignments((store) => {
-			if (!store[language][label]) {
-				store[language][label] = []
+			if (!store[language][label.name]) {
+				store[language][label.name] = []
 			}
-			store[language][label].push(this)
+			store[language][label.name].push(this)
 			return store
 		})
 	}

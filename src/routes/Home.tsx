@@ -1,9 +1,9 @@
 import { A } from '@solidjs/router'
 import { type Accessor, createSignal, For, Show } from 'solid-js'
-import { Assignment, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from '../types.tsx'
+import { Assignment, Label, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from '../types.tsx'
 
 function getPassedAssignments() {
-	return Assignment.flat().filter((assignment) => assignment.isPassed)
+	return Assignment.flat().filter((assignment) => assignment.passed)
 }
 const passedAssignments = getPassedAssignments()
 const passedAssignmentsSignals: Record<string, [Accessor<boolean>, (value: boolean) => void]> = {}
@@ -67,18 +67,20 @@ export default () => {
 									<h2>{language}</h2>
 									<For each={Object.entries(labels)}>
 										{([label, assignments]) => (
-											<li>
-												<h3>{label}</h3>
-												<ol>
-													<For each={assignments}>
-														{(assignment) => (
-															<li classList={{ passed: passed(assignment)() }}>
-																<A href={`/Assignment/${assignment.language.replaceAll(' / ', '-')}/${assignment.label}/${assignment.title}/${assignment.key}`}>{assignment.title}</A>
-															</li>
-														)}
-													</For>
-												</ol>
-											</li>
+											<Show when={Label.getByName(label)?.isUnlocked}>
+												<li>
+													<h3>{label}</h3>
+													<ol>
+														<For each={assignments}>
+															{(assignment) => (
+																<li classList={{ passed: passed(assignment)() }}>
+																	<A href={`/Assignment/${assignment.language.replaceAll(' / ', '-')}/${assignment.label}/${assignment.title}/${assignment.key}`}>{assignment.title}</A>
+																</li>
+															)}
+														</For>
+													</ol>
+												</li>
+											</Show>
 										)}
 									</For>
 								</ol>
