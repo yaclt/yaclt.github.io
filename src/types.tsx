@@ -51,15 +51,15 @@ export class Label {
 	get name() {
 		return this.#_name
 	}
-	get sortNumber() {
-		return labels.findIndex((label) => label === this)
-	}
 	get isUnlocked() {
 		const prerequisite = flatAssignments.find((assignment) => this.#_prerequisites.includes(assignment.label) && !assignment.passed)
 		return !prerequisite
 	}
 	static getByName(name: string) {
 		return labels.find((label) => label.name === name)
+	}
+	static getSortNumber(name: string) {
+		return labels.findIndex((label) => label.name === name)
 	}
 	constructor(name: string, prerequisites: Label[]) {
 		this.#_name = name

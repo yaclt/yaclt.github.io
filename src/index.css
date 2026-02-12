@@ -1,3 +1,7 @@
 .passed::before {
 	content: '✅';
 }
+
+.reverse {
+	transform: rotate(180deg);
+}
