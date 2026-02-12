@@ -3,7 +3,6 @@
   "specifiers": {
     "jsr:@std/assert@*": "1.0.18",
     "jsr:@std/assert@1.0.18": "1.0.18",
-    "jsr:@std/encoding@^1.0.10": "1.0.10",
     "jsr:@std/internal@^1.0.12": "1.0.12",
     "npm:@deno/vite-plugin@^1.0.6": "1.0.6_vite@7.3.1__@types+node@24.10.8__picomatch@4.0.3_@types+node@24.10.8",
     "npm:@magic-works/engine262@^0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226": "0.0.1-4d5d1d017bb82a002adb06f997d7e0d57bb71226",
@@ -20,9 +19,6 @@
       "dependencies": [
         "jsr:@std/internal"
       ]
-    },
-    "@std/encoding@1.0.10": {
-      "integrity": "8783c6384a2d13abd5e9e87a7ae0520a30e9f56aeeaa3bdf910a3eaaf5c811a1"
     },
     "@std/internal@1.0.12": {
       "integrity": "972a634fd5bc34b242024402972cd5143eac68d8dffaca5eaa4dba30ce17b027"
@@ -808,9 +804,6 @@
     }
   },
   "workspace": {
-    "dependencies": [
-      "jsr:@std/encoding@^1.0.10"
-    ],
     "packageJson": {
       "dependencies": [
         "npm:@deno/vite-plugin@^1.0.6",

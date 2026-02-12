@@ -1,5 +1,11 @@
 import { Assignment, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from './types.tsx'
-import { encodeHex } from '@std/encoding'
+
+async function hash(string: string) {
+	const encoder = new TextEncoder()
+	const data = encoder.encode(string)
+	const hash = await crypto.subtle.digest('SHA-1', data)
+	return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('')
+}
 
 const assignmentPaths = [
 	/*ASSIGNMENT_PATHS_BEGIN*/
@@ -10,10 +16,7 @@ const assignmentPaths = [
 
 async function getHashKey(assignment: Assignment) {
 	const payload = [assignment.key.id, ...assignment.segments.filter((_s, index) => index % 2 === 0).map((segment) => segment.get())]
-	const messageBuffer = new TextEncoder().encode(payload.join('\n'))
-	const hashBuffer = await crypto.subtle.digest('SHA-256', messageBuffer)
-	const hash = encodeHex(hashBuffer)
-	return hash
+	return await hash(payload.join('\n'))
 }
 
 const imports: Promise<Assignment>[] = []
