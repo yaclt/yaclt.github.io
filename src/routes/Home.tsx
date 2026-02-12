@@ -11,7 +11,9 @@ function passedAssignmentWatcher() {
 	try {
 		const newPassedAssignments = getPassedAssignments().filter((assignment) => !passedAssignments.includes(assignment))
 		newPassedAssignments.forEach((assignment) => {
-			passedAssignmentsSignals[assignment.hashKey][1](true)
+			if (passedAssignmentsSignals[assignment.hashKey]) {
+				passedAssignmentsSignals[assignment.hashKey][1](true)
+			}
 		})
 		passedAssignments.push(...newPassedAssignments)
 	} catch (error) {
