@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 jobs:
-  Test:
+  Test, Build, Deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -28,3 +28,18 @@ jobs:
 
       - name: Run tests
         run: deno test -A
+
+      - name: Build
+        run: deno task build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: 'dist'
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
