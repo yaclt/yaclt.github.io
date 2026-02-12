@@ -2,7 +2,8 @@
 	"language": "JavaScript / TypeScript",
 	"labels": [{
 		"name": "Introduction",
-		"requirements": [],
+		"id": "6c90ff2d-e5c3-46cf-9a07-c8698db2f1b6",
+		"prerequisites": [],
 		"assignments": [{
 			"id": "b78b6e6e-5d21-41dd-91d2-1ab23dbb1625",
 			"title": "Introduction",
@@ -15,7 +16,8 @@
 		}]
 	}, {
 		"name": "Fundamentals",
-		"requirements": ["Introduction"],
+		"id": "698fd381-2838-4cdc-a54c-fef47a38df1d",
+		"prerequisites": ["6c90ff2d-e5c3-46cf-9a07-c8698db2f1b6"],
 		"assignments": [{
 			"id": "2c88fa31-58d3-44c5-b94d-639a4ddf1056",
 			"title": "The \"for\" loop",

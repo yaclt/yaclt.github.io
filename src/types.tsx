@@ -67,8 +67,6 @@ export class Label {
 		labels.push(this)
 	}
 }
-export const Introduction = new Label('Introduction', [])
-export const JS_Fundamentals = new Label('Fundamentals', [Introduction])
 
 const [assignments, setAssignments] = createStore<Record<Language, Record<string, Assignment[]>>>({
 	'JavaScript / TypeScript': {},
