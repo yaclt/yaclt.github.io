@@ -120,15 +120,26 @@ export abstract class Assignment {
 	validate() {
 		const engine = new Engine262()
 		const ticks: number[] = []
+		const failedSegments: string[] = []
 		let result: unknown
 		let passed: boolean
 		let error: Error | undefined
-		this.#_segments.forEach((segment, index) => {
-			if (error) return
-			const res = engine.evaluate((index === 0 ? '' : '\n') + segment.get())
+		this.#_segments.forEach((segment) => {
+			let script = failedSegments.join('\n')
+			if (script) {
+				script += '\n'
+			}
+			const scriptSegment = segment.get()
+			script += scriptSegment
+			const res = engine.evaluate(script)
 			ticks.push(res.ticks)
 			result = res.result
 			error = res.error
+			if (error) {
+				failedSegments.push(scriptSegment)
+			} else {
+				failedSegments.splice(0, failedSegments.length)
+			}
 		})
 		if (result === undefined) {
 			passed = false
