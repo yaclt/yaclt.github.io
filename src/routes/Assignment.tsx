@@ -54,7 +54,7 @@ export default () => {
 		if (v.passed) {
 			const userTicks = ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)
 			const allTicks = ticks().reduce((a, b) => a + b, 0)
-			fetch(`https://docs.google.com/forms/d/e/1FAIpQLSf8sJDTIXh8UXZzQUVkVBDMayUCrTg4fThHBJg2JNqn37dxyg/formResponse?entry.377919147=${USER_ID}&entry.850045796=${a.key.id}&entry.1964957096=${userTicks}&entry.1220465795=${allTicks}&submit=Submit`, {
+			fetch(`https://docs.google.com/forms/d/e/1FAIpQLSf8sJDTIXh8UXZzQUVkVBDMayUCrTg4fThHBJg2JNqn37dxyg/formResponse?entry.377919147=${USER_ID}&entry.850045796=${a.id.id}&entry.1964957096=${userTicks}&entry.1220465795=${allTicks}&submit=Submit`, {
 				method: 'GET',
 				mode: 'no-cors',
 				headers: {
@@ -86,7 +86,15 @@ export default () => {
 							<For each={assignment()?.segments}>
 								{(segment, index) => (
 									<>
-										<textarea id={createUniqueId()} style='width: 100%; resize: none; scrollbar-width: none; tab-size: 4;' wrap='off' rows={segment.get().split('\n').length} disabled={index() % 2 === 0} value={segment.get()} onInput={(e) => validate(e.target.value, segment.set)} />
+										<textarea
+											id={createUniqueId()}
+											style='width: 100%; resize: none; scrollbar-width: none; tab-size: 4;'
+											wrap='off'
+											rows={segment.get().split('\n').length}
+											disabled={index() % 2 === 0}
+											value={segment.get()}
+											onInput={(e) => validate(e.target.value, segment.set)}
+										/>
 										<i style='align-content: center; text-align: right;'>
 											<Show when={ticks()[index()]}>
 												{ticks()[index()]}

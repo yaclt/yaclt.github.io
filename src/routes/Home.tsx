@@ -77,7 +77,7 @@ export default () => {
 															<For each={assignments}>
 																{(assignment) => (
 																	<li classList={{ passed: passed(assignment)() }}>
-																		<A href={`/Assignment/${assignment.language.replaceAll(' / ', '-')}/${assignment.label}/${assignment.title}/${assignment.key}`}>{assignment.title}</A>
+																		<A href={`/Assignment/${assignment.language.replaceAll(' / ', '-')}/${assignment.label}/${assignment.title}/${assignment.id}`}>{assignment.title}</A>
 																	</li>
 																)}
 															</For>

@@ -74,8 +74,8 @@ const [assignments, setAssignments] = createStore<Record<Language, Record<string
 	'JavaScript / TypeScript': {},
 })
 const flatAssignments: Assignment[] = []
-export abstract class Assignment {
-	#_key: UniqueID
+export class Assignment {
+	#_id: UniqueID
 	#_title: string
 	#_label: Label
 	#_language: Language
@@ -99,8 +99,8 @@ export abstract class Assignment {
 		this.#_hashKey = hashKey
 		this.#_passed = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${this.#_hashKey}`) !== null
 	}
-	get key() {
-		return this.#_key
+	get id() {
+		return this.#_id
 	}
 	get title() {
 		return this.#_title
@@ -158,7 +158,7 @@ export abstract class Assignment {
 		return assignments
 	}
 	static getAssignment(key: string) {
-		const assignment = flatAssignments.find((assignment) => assignment.key.id === key)
+		const assignment = flatAssignments.find((assignment) => assignment.id.id === key)
 		if (!assignment) {
 			throw new AssignmentNotFoundError(key)
 		}
@@ -169,7 +169,7 @@ export abstract class Assignment {
 	}
 
 	constructor(
-		key: string,
+		id: string,
 		language: Language,
 		label: Label,
 		title: string,
@@ -177,7 +177,7 @@ export abstract class Assignment {
 		answer: number | string | boolean | null | object,
 	) {
 		if (
-			!key.match(
+			!id.match(
 				/^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$/,
 			)
 		) {
@@ -186,7 +186,7 @@ export abstract class Assignment {
 		if (assignment.length < 2) {
 			throw new Error('Assignment must have at least 2 strings')
 		}
-		this.#_key = new UniqueID(key)
+		this.#_id = new UniqueID(id)
 		this.#_title = title
 		this.#_label = label
 		this.#_language = language

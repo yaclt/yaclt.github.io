@@ -7,33 +7,38 @@ async function hash(string: string) {
 	return Array.from(new Uint8Array(hash)).map((b) => b.toString(16).padStart(2, '0')).join('')
 }
 
-const assignmentPaths = [
-	/*ASSIGNMENT_PATHS_BEGIN*/
-	'./assignments/For.tsx',
-	'./assignments/Introduction.tsx',
-	/*ASSIGNMENT_PATHS_END*/
-]
-
 async function getHashKey(assignment: Assignment) {
-	const payload = [assignment.key.id, ...assignment.segments.filter((_s, index) => index % 2 === 0).map((segment) => segment.get())]
+	const payload = [assignment.id.id, ...assignment.segments.filter((_s, index) => index % 2 === 0).map((segment) => segment.get())]
 	return await hash(payload.join('\n'))
 }
 
 const imports: Promise<Assignment>[] = []
-assignmentPaths.forEach((path) => {
-	imports.push(
-		import(path).then(async (module) => {
-			const assignment = new module.default()
-			assignment.hashKey = await getHashKey(assignment)
-			if (localStorage.getItem(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT + assignment.hashKey)) {
-				PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION.push(assignment)
-			}
-			return assignment
-		}),
-	)
+const assignmentFetch = fetch('/assignments.json').then((response) => response.json()).then((data) => {
+	data.forEach((item) => {
+		item.labels.forEach((label) => {
+			label.assignments.forEach(async (assignment) => {
+				let resolve = (a: Assignment): void => {
+					a // Dummy function
+				}
+				imports.push(
+					new Promise((r) => {
+						resolve = r
+					}),
+				)
+				const a = new Assignment(assignment.id, item.language, label, assignment.title, assignment.content, assignment.answer)
+				a.hashKey = await getHashKey(a)
+				if (localStorage.getItem(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT + a.hashKey)) {
+					PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION.push(assignment)
+				}
+				if (resolve) {
+					resolve(a)
+				}
+			})
+		})
+	})
 })
 
-export const assignmentsReady = await Promise.allSettled(imports).then((results) => {
+export const assignmentsReady = await Promise.allSettled([assignmentFetch, ...imports]).then((results) => {
 	const rejected = results.find((result) => result.status === 'rejected')
 	if (rejected === undefined) {
 		return true
