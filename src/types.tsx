@@ -123,7 +123,7 @@ export abstract class Assignment {
 		const failedSegments: string[] = []
 		let result: unknown
 		let passed: boolean
-		let error: Error | undefined
+		let error: Error | unknown
 		this.#_segments.forEach((segment) => {
 			let script = failedSegments.join('\n')
 			if (script) {
