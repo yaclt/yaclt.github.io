@@ -1,19 +1,19 @@
 import { A } from '@solidjs/router'
 import { type Accessor, createSignal, For, Show } from 'solid-js'
-import { Assignment, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from '../types.tsx'
+import { Assignment, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from '../types.tsx'
 
 function getPassedAssignments() {
-	return Object.entries(localStorage).filter(([key]) => key.startsWith(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT)).map(([key]) => key.substring(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT.length))
+	return Assignment.flat().filter((assignment) => assignment.isPassed)
 }
 const passedAssignments = getPassedAssignments()
 const passedAssignmentsSignals: Record<string, [Accessor<boolean>, (value: boolean) => void]> = {}
 function passedAssignmentWatcher() {
 	try {
-		const newPassedAssignments = getPassedAssignments().filter((key) => !passedAssignments.includes(key))
-		newPassedAssignments.forEach((key) => {
-			passedAssignmentsSignals[key][1](true)
-			passedAssignments.push(key)
+		const newPassedAssignments = getPassedAssignments().filter((assignment) => !passedAssignments.includes(assignment))
+		newPassedAssignments.forEach((assignment) => {
+			passedAssignmentsSignals[assignment.hashKey][1](true)
 		})
+		passedAssignments.push(...newPassedAssignments)
 	} catch (error) {
 		console.error(error)
 	}
@@ -43,7 +43,10 @@ export default () => {
 	}
 
 	function passed(assignment: Assignment) {
-		const [passed, setPassed] = createSignal(passedAssignments.includes(assignment.hashKey))
+		if (passedAssignmentsSignals[assignment.hashKey]) {
+			return passedAssignmentsSignals[assignment.hashKey][0]
+		}
+		const [passed, setPassed] = createSignal(passedAssignments.includes(assignment))
 		passedAssignmentsSignals[assignment.hashKey] = [passed, setPassed]
 		return passed
 	}
