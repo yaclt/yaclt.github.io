@@ -1,7 +1,7 @@
 import { defineConfig } from 'vite'
 import solid from 'vite-plugin-solid'
 import deno from '@deno/vite-plugin'
-import customPlugins from './customPlugins.tsx'
+import customPlugins from './customPlugins.ts'
 
 export default defineConfig({
 	plugins: [
