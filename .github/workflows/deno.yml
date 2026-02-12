@@ -2,21 +2,18 @@ name: Deno
 
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
-    branches: ["main"]
+    branches: ['main']
 
 permissions:
   contents: read
 
 jobs:
-  test:
+  Test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Prepare git 
-        run: git config --global core.autocrlf false 
-
       - name: Setup repo
         uses: actions/checkout@v4
 
