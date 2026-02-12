@@ -29,11 +29,14 @@ export class Engine262 {
 		let result
 		let error
 		try {
-			result = this.#_realm.evaluateScript(script)
-			if (result.Type === 'throw') {
-				error = result.Value.ErrorData.value
+			type Result =
+				| { Type: 'throw'; Value: { ErrorData: { value: Error } } }
+				| { Type: 'normal'; Value: { value: unknown } }
+			const raw = this.#_realm.evaluateScript(script) as Result
+			if (raw.Type === 'throw') {
+				error = raw.Value.ErrorData.value
 			} else {
-				result = result.Value?.value
+				result = raw.Value.value
 			}
 		} catch (err) {
 			error = err
