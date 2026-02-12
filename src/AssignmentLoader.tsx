@@ -1,4 +1,4 @@
-import { Assignment, Label, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from './types.tsx'
+import { Assignment, Label, type Language, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from './types.tsx'
 
 async function hash(string: string) {
 	const encoder = new TextEncoder()
@@ -17,7 +17,7 @@ const labels: Record<string, Label> = {}
 const prerequisitesRaw: Record<string, string[]> = {}
 const prerequisites: Record<string, Label[]> = {}
 const assignmentFetch = fetch('/assignments.json').then((response) => response.json()).then((data) => {
-	data.forEach((item) => {
+	data.forEach((item: { language: Language; labels: { name: string; id: string; prerequisites: string[]; assignments: { id: string; title: string; content: string[]; answer: number | string | boolean | null | object }[] }[] }) => {
 		item.labels.forEach((labelData) => {
 			const prerequisitesArray: Label[] = []
 			const label = new Label(labelData.name, prerequisitesArray)
