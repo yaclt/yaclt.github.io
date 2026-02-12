@@ -14,6 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Prepare git 
+        run: git config --global core.autocrlf false 
+
       - name: Setup repo
         uses: actions/checkout@v4
 
