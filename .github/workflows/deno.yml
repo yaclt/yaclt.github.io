@@ -7,7 +7,7 @@ on:
     branches: ['main']
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   Test-Build-Deploy:
@@ -21,8 +21,6 @@ jobs:
         uses: denoland/setup-deno@v2
         with:
           deno-version: lts
-
-      - name: Install dependencies
         run: deno install
 
       - name: Verify formatting
