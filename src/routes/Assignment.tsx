@@ -111,6 +111,9 @@ export default () => {
 							Result:&nbsp;<output>{result()?.toString()}</output>
 						</p>
 					</ErrorBoundary>
+					<Show when={passed()}>
+						<A href='/'>Back to Home</A>
+					</Show>
 				</div>
 			</ErrorBoundary>
 		</div>
