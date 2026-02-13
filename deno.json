@@ -1,6 +1,7 @@
 {
 	"tasks": {
 		"dev": "vite",
+		"dev_with_checks": "deno upgrade; deno fmt --check; deno lint; deno test -A; deno task dev",
 		"build": "tsc -b && vite build",
 		"preview": "vite preview"
 	},
