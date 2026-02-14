@@ -53,10 +53,10 @@ export default () => {
 		return passed
 	}
 	return (
-		<div class="home-layout">
+		<div class='home-layout'>
 			<For each={[true, false]}>
 				{(todo) => (
-					<div class="section-card assignments-column">
+					<div class='section-card assignments-column'>
 						<Show when={todo}>
 							<h1>Assignments</h1>
 						</Show>
@@ -65,15 +65,15 @@ export default () => {
 						</Show>
 						<For each={init(todo)}>
 							{([language, labels]) => (
-								<section class="language-section" aria-label={language}>
+								<section class='language-section' aria-label={language}>
 									<h2>{language}</h2>
-									<ol class="label-list" classList={{ reverse: todo }}>
+									<ol class='label-list' classList={{ reverse: todo }}>
 										<For each={Object.entries(labels).sort((a, b) => Label.getSortNumber(a[0]) - Label.getSortNumber(b[0]))}>
 											{([label, assignments]) => (
 												<Show when={Label.getByName(label)?.isUnlocked}>
 													<li classList={{ reverse: todo }}>
 														<h3>{label}</h3>
-														<ol class="assignment-list">
+														<ol class='assignment-list'>
 															<For each={assignments}>
 																{(assignment) => (
 																	<li classList={{ passed: passed(assignment)() }}>
