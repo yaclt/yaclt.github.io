@@ -13,18 +13,21 @@ if (!assignmentsReady) {
 }
 
 const root = (props: RouteSectionProps<unknown>) => (
-	<>
-		<header>
-			<h1>🧑‍💻 Yaclt</h1>
-			<nav style='display: flex; gap: 1rem;'>
-				<A href='/'>Home</A>
-				<A style='display: none; /* Hide playground for now */' href='/Playground'>Playground</A>
-			</nav>
+	<div class='app-root'>
+		<header class='app-header'>
+			<div class='app-header-inner'>
+				<A href='/' class='app-logo'>
+					<span aria-hidden='true'>🧑‍💻</span>
+					Yaclt
+				</A>
+				<nav class='app-nav'>
+					<A href='/' style={{ display: props.location.pathname === '/' ? 'none' : 'block' }}>Home</A>
+					<A href='/Playground' style='display: none; /* Hide until implemented */'>Playground</A>
+				</nav>
+			</div>
 		</header>
-		<main>
-			{props.children}
-		</main>
-	</>
+		<main>{props.children}</main>
+	</div>
 )
 
 render(() => (
