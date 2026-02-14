@@ -21,6 +21,8 @@ export default () => {
 			setTicks(passedAssignmentSegments.ticks)
 			setResult(passedAssignmentSegments.result)
 			setPassed(true)
+		} else {
+			setTicks(assignment.segments.map(() => -1))
 		}
 		return assignment
 	})
@@ -44,13 +46,13 @@ export default () => {
 	}
 	function updateCodeCells() {
 		setCodeCellsWidth(Math.max(...[...document.getElementsByClassName('code-cell-input')].map((e) => e.scrollWidth)))
-		const tickCells = [...document.getElementsByClassName('tick-cell')]
-		const codeCells = [...document.getElementsByClassName('code-cell')]
+		const tickCells = [...document.getElementsByClassName('tick-cell')] as HTMLElement[]
+		const codeCells = [...document.getElementsByClassName('code-cell')] as HTMLElement[]
 		codeCells.forEach((codeCell, index) => {
 			const tickCell = tickCells[index + 1]
-			codeCell.style.height = null
-			tickCell.style.height = null
-			if (index === 0) {
+			codeCell.style.height = ''
+			tickCell.style.height = ''
+			if (index === 0 && codeCell.parentElement) {
 				codeCell.parentElement.style.marginTop = `${tickCell.clientHeight}px`
 			}
 			const height = Math.max(tickCell.clientHeight, codeCell.clientHeight)
@@ -94,10 +96,10 @@ export default () => {
 				<h1>{assignment()?.title}</h1>
 				<div class='assignment-meta'>
 					<span>
-						Time: {ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)} ticks
+						Time: {ticks().filter((t, index) => index % 2 && 0 < t).reduce((a, b) => a + b, 0)} ticks
 					</span>
 					<span>
-						Total: {ticks().reduce((a, b) => a + b, 0)} ticks
+						Total: {ticks().filter((t) => 0 < t).reduce((a, b) => a + b, 0)} ticks
 					</span>
 				</div>
 				<ErrorBoundary fallback={error}>
@@ -115,6 +117,7 @@ export default () => {
 											disabled={index() % 2 === 0}
 											value={segment.get()}
 											onInput={(e) => validate(e.target.value, segment.set)}
+											spellcheck={false}
 										/>
 									</div>
 								)}
@@ -124,9 +127,11 @@ export default () => {
 							<div class='tick-cell'>Ticks</div>
 							<For each={ticks()}>
 								{(tick) => (
-									<div class='tick-cell'>
-										{tick}
-									</div>
+									<Show when={0 <= tick}>
+										<div class='tick-cell'>
+											{tick}
+										</div>
+									</Show>
 								)}
 							</For>
 						</div>

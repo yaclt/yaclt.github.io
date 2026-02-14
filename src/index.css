@@ -341,9 +341,7 @@ a:hover {
 .assignment-page textarea {
 	display: block;
 	width: 100%;
-	min-height: 80px;
 	margin: 0;
-	padding: var(--space-md);
 	font-family: var(--font-mono);
 	font-size: 0.9rem;
 	line-height: 1.5;
