@@ -308,6 +308,7 @@ a:hover {
 }
 
 .code-cells .code-cell textarea {
+	min-width: stretch;
 	scrollbar-width: thin;
 }
 
