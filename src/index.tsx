@@ -35,7 +35,7 @@ render(() => (
 		<Route path='' component={Home} />
 		<Route path='Assignment/*path' component={Assignment} />
 		<Route path='Playground' component={Playground} />
-		<Route path='builder' component={AssignmentBuilder} />
+		<Route path='builder/:assignmentId?' component={AssignmentBuilder} />
 		<Route path='*missingPage' component={Home} />
 	</Router>
 ), document.body!)

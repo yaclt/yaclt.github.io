@@ -1,10 +1,31 @@
 import { createSignal, createUniqueId, For, type Signal } from 'solid-js'
+import { useParams } from '@solidjs/router'
+import { Assignment } from '../types.tsx'
 
 export default () => {
+	const params = useParams()
+	const assignmentId = params.assignmentId ?? crypto.randomUUID()
+
 	const codes: Signal<string>[] = []
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
 	const [code, setCode] = createSignal('')
+
+	if (params.assignmentId) {
+		const assignment = Assignment.getAssignment(assignmentId)
+		if (assignment) {
+			setSegments(assignment.segments.length)
+			setTimeout(() => {
+				assignment.segments.forEach((segment, index) => {
+					const element = document.getElementById('segment_' + index.toString()) as HTMLTextAreaElement
+					if (element) {
+						element.value = segment.get()
+						updateCode(element)
+					}
+				})
+			})
+		}
+	}
 
 	function updateCode(element: HTMLTextAreaElement) {
 		const value = JSON.stringify(element.value)
@@ -41,7 +62,7 @@ export default () => {
 			<h1>Assignment Builder</h1>
 			<div class='form-group'>
 				<div class='label'>Assignment ID</div>
-				<input type='text' value={crypto.randomUUID()} readOnly />
+				<input type='text' value={assignmentId} readOnly />
 			</div>
 			<div class='form-group'>
 				<div class='label'>Number of segments</div>
