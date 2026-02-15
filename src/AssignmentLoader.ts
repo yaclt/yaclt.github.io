@@ -12,12 +12,23 @@ async function getHashKey(assignment: Assignment) {
 	return await hash(payload.join('\n'))
 }
 
-const imports: Promise<Assignment>[] = []
-const labels: Record<string, Label> = {}
-const prerequisitesRaw: Record<string, string[]> = {}
-const prerequisites: Record<string, Label[]> = {}
-const assignmentFetch = fetch('/assignments.json').then((response) => response.json()).then((data) => {
-	data.forEach((item: { language: Language; labels: { name: string; id: string; prerequisites: string[]; assignments: { id: string; title: string; content: string[]; answer: number | string | boolean | null | object }[] }[] }) => {
+function addAssignments(data: [
+	{
+		language: Language
+		labels: {
+			name: string
+			id: string
+			prerequisites: string[]
+			assignments: {
+				id: string
+				title: string
+				segments: string[]
+				answer: number | string | boolean | null | object
+			}[]
+		}[]
+	},
+]) {
+	data.forEach((item) => {
 		item.labels.forEach((labelData) => {
 			const prerequisitesArray: Label[] = []
 			const label = new Label(labelData.name, prerequisitesArray)
@@ -33,7 +44,7 @@ const assignmentFetch = fetch('/assignments.json').then((response) => response.j
 						resolve = r
 					}),
 				)
-				const assignment = new Assignment(assignmentData.id, item.language, label, assignmentData.title, assignmentData.content, assignmentData.answer)
+				const assignment = new Assignment(assignmentData.id, item.language, label, assignmentData.title, assignmentData.segments, assignmentData.answer)
 				assignment.hashKey = await getHashKey(assignment)
 				if (localStorage.getItem(LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT + assignment.hashKey)) {
 					PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION.push(assignment)
@@ -44,9 +55,24 @@ const assignmentFetch = fetch('/assignments.json').then((response) => response.j
 			})
 		})
 	})
-})
+}
 
-export const assignmentsReady = await Promise.allSettled([assignmentFetch, ...imports]).then((results) => {
+const imports: Promise<Assignment>[] = []
+const labels: Record<string, Label> = {}
+const prerequisitesRaw: Record<string, string[]> = {}
+const prerequisites: Record<string, Label[]> = {}
+const assignmentFetch = fetch('/assignments.json').then((response) => response.json()).then(addAssignments)
+
+const customAssignmentsFetches: Promise<void>[] = []
+try {
+	JSON.parse(localStorage.getItem('CustomAssignments') ?? '[]').forEach((path: string) => {
+		customAssignmentsFetches.push(fetch(path).then((response) => response.json()).then(addAssignments))
+	})
+} catch (error) {
+	console.error(error)
+}
+
+export const assignmentsReady = await Promise.allSettled([assignmentFetch, ...imports]).then(async (results) => {
 	const rejected = results.find((result) => result.status === 'rejected')
 	if (rejected === undefined) {
 		Object.entries(prerequisitesRaw).forEach(([id, prerequisiteIds]) => {
@@ -56,6 +82,7 @@ export const assignmentsReady = await Promise.allSettled([assignmentFetch, ...im
 				prerequisiteArray.push(prerequisiteLabel)
 			})
 		})
+		await Promise.allSettled(customAssignmentsFetches)
 		return true
 	}
 	throw new Error(`Failed to load assignment: ${rejected.reason.message}`)

@@ -7,7 +7,7 @@
 		"assignments": [{
 			"id": "b78b6e6e-5d21-41dd-91d2-1ab23dbb1625",
 			"title": "Introduction",
-			"content": [
+			"segments": [
 				"/**\n * Hello World 🧑‍💻\n *\n * This is a simple introductory assignment to get you started with Yaclt (Yet another code learning tool).\n * This assignment is easy. You just need to add two numbers (a and b) and assign the result to the 'answer' variable. Do it however you want.\n */\nconst a = 1\nconst b = 2\nlet answer = 0",
 				"answer = ",
 				"a + b == answer"
@@ -21,7 +21,7 @@
 		"assignments": [{
 			"id": "2c88fa31-58d3-44c5-b94d-639a4ddf1056",
 			"title": "The \"for\" loop",
-			"content": [
+			"segments": [
 				"/**\n * Hello World 🧑‍💻\n *\n * The \"for\" loop is a loop that can be used to iterate over a range of values.\n * \n * The \"i\" variable is the counter variable. It is initialized to 0 and incremented by 1 on each iteration.\n * The \"i < 10\" condition is the condition that must be true in order to continue the loop.\n * The \"i++\" statement is the increment statement. It is executed after each iteration.\n * \n * The loop below could be read as: for as long as \"i < 10\", do the code inside the loop, and then increment \"i\" by 1 (i++).\n */\n\nlet answer = 0\nfor (let i = 0; i < 10; i++) {",
 				"\tanswer += ",
 				"}\n\nanswer == 10"
@@ -30,7 +30,16 @@
 		}, {
 			"id": "65ef374b-4bc6-4858-982a-39cc59d3feec",
 			"title": "The \"while\" loop",
-			"content": [
+			"segments": [
+				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that is used to iterate until it's condition is met.\n * \n * This loop will continue until condition \"answer < 10\" is true.\n * The loop could be read as: for as long as \"answer < 10\", do the code inside the loop.\n */\n\nlet i = 0\nlet answer = 0\nwhile (answer < 10) {",
+				"\tanswer += i\n\ti++",
+				"}\n\nanswer == 10"
+			],
+			"answer": true
+		}, {
+			"id": "62579674-5c57-4367-b27c-03b20a81ab12",
+			"title": "The Math library",
+			"segments": [
 				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that is used to iterate until it's condition is met.\n * \n * This loop will continue until condition \"answer < 10\" is true.\n * The loop could be read as: for as long as \"answer < 10\", do the code inside the loop.\n */\n\nlet i = 0\nlet answer = 0\nwhile (answer < 10) {",
 				"\tanswer += i\n\ti++",
 				"}\n\nanswer == 10"

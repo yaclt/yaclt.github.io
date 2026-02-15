@@ -46,10 +46,11 @@ export default () => {
 	}
 	function updateCodeCells() {
 		setCodeCellsWidth(Math.max(...[...document.getElementsByClassName('code-cell-input')].map((e) => e.scrollWidth)))
-		const tickCells = [...document.getElementsByClassName('tick-cell')] as HTMLElement[]
 		const codeCells = [...document.getElementsByClassName('code-cell')] as HTMLElement[]
+		const tickCells = [...document.getElementsByClassName('tick-cell')] as HTMLElement[]
 		codeCells.forEach((codeCell, index) => {
 			const tickCell = tickCells[index + 1]
+			if (!tickCell) return
 			codeCell.style.height = ''
 			tickCell.style.height = ''
 			if (index === 0 && codeCell.parentElement) {
@@ -59,12 +60,12 @@ export default () => {
 		})
 	}
 	setTimeout(updateCodeCells)
-	function validate(value: string, set: (value: string) => void) {
+	async function validate(value: string, set: (value: string) => void) {
 		set(value)
 		updateCodeCells()
 		const a = assignment()
 		if (!a) return
-		const v = a.validate()
+		const v = await a.validate()
 		setResult(v.error || v.result)
 		setTicks(v.ticks)
 		setPassed(v.passed)

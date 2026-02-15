@@ -1,7 +1,7 @@
 import { createSignal, createUniqueId, For, type Signal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 import { Assignment } from '../types.tsx'
-import { Engine262 } from '../Engine262.tsx'
+import Evaluator from '../Evaluator.ts'
 
 export default () => {
 	const params = useParams()
@@ -58,9 +58,9 @@ export default () => {
 		})
 	}
 
-	function run() {
+	async function run() {
 		const code = codes.map((code) => JSON.parse(code[0]())).join('\n')
-		const result = new Engine262().evaluate(code)
+		const result = await Evaluator.evaluate('JavaScript / TypeScript', code)
 		setTestResult(JSON.stringify(result, null, '\n'))
 	}
 
