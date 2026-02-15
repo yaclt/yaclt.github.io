@@ -1,7 +1,7 @@
 import { createStore } from 'solid-js/store'
 import { createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
-import { Engine262 } from './Engine262.tsx'
+import Evaluator from './Evaluator.ts'
 
 export const LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT = 'passed_assignment_:'
 export const PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION: Assignment[] = []
@@ -115,30 +115,9 @@ export class Assignment {
 	get passed() {
 		return this.#_passed
 	}
-	validate() {
-		const engine = new Engine262()
-		const ticks: number[] = []
-		const failedSegments: string[] = []
-		let result: unknown
+	async validate() {
+		const { result, ticks, error } = await Evaluator.evaluate(this.#_language, this.#_segments.map((segment) => segment.get()))
 		let passed: boolean
-		let error: Error | unknown
-		this.#_segments.forEach((segment) => {
-			let script = failedSegments.join('\n')
-			if (script) {
-				script += '\n'
-			}
-			const scriptSegment = segment.get()
-			script += scriptSegment
-			const res = engine.evaluate(script)
-			ticks.push(res.ticks)
-			result = res.result
-			error = res.error
-			if (error) {
-				failedSegments.push(scriptSegment)
-			} else {
-				failedSegments.splice(0, failedSegments.length)
-			}
-		})
 		if (result === undefined) {
 			passed = false
 		} else if (![typeof this.#_answer, typeof result].find((type) => type !== 'object')) {

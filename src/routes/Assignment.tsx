@@ -8,6 +8,7 @@ export default () => {
 	const [result, setResult] = createSignal()
 	const [ticks, setTicks] = createSignal<number[]>([])
 	const [passed, setPassed] = createSignal(false)
+	const [codeCellsWidth, setCodeCellsWidth] = createSignal(0)
 	const assignment = createMemo(() => {
 		const assignmentKey = params.path?.split('/').at(-1) ?? ''
 		const assignment = Assignment.getAssignment(assignmentKey)
@@ -20,6 +21,8 @@ export default () => {
 			setTicks(passedAssignmentSegments.ticks)
 			setResult(passedAssignmentSegments.result)
 			setPassed(true)
+		} else {
+			setTicks(assignment.segments.map(() => -1))
 		}
 		return assignment
 	})
@@ -27,27 +30,42 @@ export default () => {
 		switch (err.constructor) {
 			case AssignmentNotFoundError:
 				return (
-					<div>
-						Could not find assignment
-						<br />
-						<A href='/'>Go back</A>
+					<div class='error-box'>
+						<p>Could not find this assignment.</p>
+						<A href='/'>Go back to Home</A>
 					</div>
 				)
 			default:
 				return (
-					<div>
-						An error occurred
-						<br />
-						<A href='/'>Go back</A>
+					<div class='error-box'>
+						<p>Something went wrong.</p>
+						<A href='/'>Go back to Home</A>
 					</div>
 				)
 		}
 	}
-	function validate(value: string, set: (value: string) => void) {
+	function updateCodeCells() {
+		setCodeCellsWidth(Math.max(...[...document.getElementsByClassName('code-cell-input')].map((e) => e.scrollWidth)))
+		const codeCells = [...document.getElementsByClassName('code-cell')] as HTMLElement[]
+		const tickCells = [...document.getElementsByClassName('tick-cell')] as HTMLElement[]
+		codeCells.forEach((codeCell, index) => {
+			const tickCell = tickCells[index + 1]
+			if (!tickCell) return
+			codeCell.style.height = ''
+			tickCell.style.height = ''
+			if (index === 0 && codeCell.parentElement) {
+				codeCell.parentElement.style.marginTop = `${tickCell.clientHeight}px`
+			}
+			tickCell.style.height = `${codeCell.clientHeight}px`
+		})
+	}
+	setTimeout(updateCodeCells)
+	async function validate(value: string, set: (value: string) => void) {
 		set(value)
+		updateCodeCells()
 		const a = assignment()
 		if (!a) return
-		const v = a.validate()
+		const v = await a.validate()
 		setResult(v.error || v.result)
 		setTicks(v.ticks)
 		setPassed(v.passed)
@@ -72,46 +90,65 @@ export default () => {
 		}
 	}
 	return (
-		<div style='text-align: center'>
+		<div class='assignment-page'>
 			<ErrorBoundary fallback={error}>
-				<h1>Assignment: {assignment()?.title}</h1>
-				<div style='display: flex; flex-direction: column;'>
-					<div>
-						<p>Time taken: {ticks().filter((_t, index) => index % 2).reduce((a, b) => a + b, 0)} ticks ({ticks().reduce((a, b) => a + b, 0)} total)</p>
-					</div>
-					<ErrorBoundary fallback={error}>
-						<div style='display: grid; grid-template-columns: 1fr auto;'>
-							<div />
-							<div>Ticks:</div>
-							<For each={assignment()?.segments}>
+				<h1>{assignment()?.title}</h1>
+				<div class='assignment-meta'>
+					<span>
+						Time: {ticks().filter((t, index) => index % 2 && 0 < t).reduce((a, b) => a + b, 0)} ticks
+					</span>
+					<span>
+						Total: {ticks().filter((t) => 0 < t).reduce((a, b) => a + b, 0)} ticks
+					</span>
+				</div>
+				<ErrorBoundary fallback={error}>
+					<div class='code-grid'>
+						<div class='code-cells'>
+							<For each={[...assignment()?.segments]}>
 								{(segment, index) => (
-									<>
+									<div class='code-cell'>
 										<textarea
 											id={createUniqueId()}
-											style='width: 100%; resize: none; scrollbar-width: none; tab-size: 4;'
+											class='code-cell-input'
+											style={{ width: `${codeCellsWidth()}px` }}
 											wrap='off'
-											rows={segment.get().split('\n').length}
+											rows={segment?.get().split('\n').length}
 											disabled={index() % 2 === 0}
 											value={segment.get()}
 											onInput={(e) => validate(e.target.value, segment.set)}
+											spellcheck={false}
 										/>
-										<i style='align-content: center; text-align: right;'>
-											<Show when={ticks()[index()]}>
-												{ticks()[index()]}
-											</Show>
-										</i>
-									</>
+									</div>
 								)}
 							</For>
 						</div>
-						<p>
+						<div class='tick-cells'>
+							<div class='tick-cell'>Ticks</div>
+							<For each={ticks()}>
+								{(tick) => (
+									<Show when={0 <= tick}>
+										<div class='tick-cell'>
+											{tick}
+										</div>
+									</Show>
+								)}
+							</For>
+						</div>
+					</div>
+					<div class='result-area' classList={{ success: passed() }}>
+						<p style='margin: 0;'>
 							<Show when={passed()}>
-								✅
+								<span aria-hidden='true'>✅</span> Passed —{' '}
 							</Show>
-							Result:&nbsp;<output>{result()?.toString()}</output>
+							Result: <output>{result()?.toString()}</output>
 						</p>
-					</ErrorBoundary>
-				</div>
+					</div>
+					<Show when={passed()}>
+						<div class='assignment-actions'>
+							<A href='/' class='btn btn-primary'>Back to Home</A>
+						</div>
+					</Show>
+				</ErrorBoundary>
 			</ErrorBoundary>
 		</div>
 	)
