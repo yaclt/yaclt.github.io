@@ -55,9 +55,7 @@ export default () => {
 			if (index === 0 && codeCell.parentElement) {
 				codeCell.parentElement.style.marginTop = `${tickCell.clientHeight}px`
 			}
-			const height = Math.max(tickCell.clientHeight, codeCell.clientHeight)
-			codeCell.style.height = `${height}px`
-			tickCell.style.height = `${height}px`
+			tickCell.style.height = `${codeCell.clientHeight}px`
 		})
 	}
 	setTimeout(updateCodeCells)
