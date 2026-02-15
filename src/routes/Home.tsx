@@ -52,6 +52,9 @@ export default () => {
 		passedAssignmentsSignals[assignment.hashKey] = [passed, setPassed]
 		return passed
 	}
+	function formatUrl(assignment: Assignment) {
+		return `${replace(assignment.language)}/${replace(assignment.label.name)}/${replace(assignment.title)}/${assignment.id}`
+	}
 	function replace(text: string) {
 		return text.replaceAll(' / ', '-').replaceAll(' ', '_')
 	}
@@ -80,7 +83,7 @@ export default () => {
 															<For each={assignments}>
 																{(assignment) => (
 																	<li classList={{ passed: passed(assignment)() }}>
-																		<A href={`/Assignment/${replace(assignment.language)}/${replace(assignment.label.name)}/${replace(assignment.title)}/${assignment.id}`}>{assignment.title}</A>
+																		<A href={`/Assignment/${formatUrl(assignment)}`}>{assignment.title}</A>
 																	</li>
 																)}
 															</For>
