@@ -1,6 +1,5 @@
-import { Agent, CreateDataProperty, Get, ManagedRealm, setSurroundingAgent, Value } from '@magic-works/engine262'
-
-false || CreateDataProperty || Get || Value
+/// <reference lib="webworker" />
+import { Agent, ManagedRealm, setSurroundingAgent } from '@magic-works/engine262'
 
 setSurroundingAgent(
 	new Agent({

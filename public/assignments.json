@@ -32,19 +32,19 @@
 			"title": "The \"while\" loop",
 			"segments": [
 				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that is used to iterate until it's condition is met.\n * \n * This loop will continue until condition \"answer < 10\" is true.\n * The loop could be read as: for as long as \"answer < 10\", do the code inside the loop.\n */\n\nlet i = 0\nlet answer = 0\nwhile (answer < 10) {",
-				"\tanswer += i\n\ti++",
+				"\tanswer += i",
 				"}\n\nanswer == 10"
 			],
 			"answer": true
 		}, {
 			"id": "62579674-5c57-4367-b27c-03b20a81ab12",
-			"title": "The Math library",
+			"title": "The Math namespace",
 			"segments": [
-				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that is used to iterate until it's condition is met.\n * \n * This loop will continue until condition \"answer < 10\" is true.\n * The loop could be read as: for as long as \"answer < 10\", do the code inside the loop.\n */\n\nlet i = 0\nlet answer = 0\nwhile (answer < 10) {",
-				"\tanswer += i\n\ti++",
-				"}\n\nanswer == 10"
+				"/**\n * Hello World 🧑‍💻\n *\n * The JavaScript Math namespace contains properties and methods for mathematical constants and functions.\n * \n * Examples:\n * For calculations with 𝜋 we would write: Math.PI.\n * For calculating 2³ we would write: Math.pow(2, 3)\n * Hint: \"pow\" is short for power.\n * \n * Calculate 𝜋².\n */\n\nlet answer",
+				"",
+				"answer"
 			],
-			"answer": true
+			"answer": 9.869604401089358
 		}]
 	}]
 }]
