@@ -1,3 +1,4 @@
+/// <reference lib="webworker" />
 import { Agent, CreateDataProperty, Get, ManagedRealm, setSurroundingAgent, Value } from '@magic-works/engine262'
 
 false || CreateDataProperty || Get || Value
