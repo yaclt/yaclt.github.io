@@ -1,6 +1,7 @@
 import { createSignal, createUniqueId, For, type Signal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 import { Assignment } from '../types.tsx'
+import { Engine262 } from '../Engine262.tsx'
 
 export default () => {
 	const params = useParams()
@@ -10,7 +11,7 @@ export default () => {
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
 	const [code, setCode] = createSignal('')
-
+	const [testResult, setTestResult] = createSignal('')
 	if (params.assignmentId) {
 		const assignment = Assignment.getAssignment(assignmentId)
 		if (assignment) {
@@ -57,6 +58,12 @@ export default () => {
 		})
 	}
 
+	function run() {
+		const code = codes.map((code) => JSON.parse(code[0]())).join('\n')
+		const result = new Engine262().evaluate(code)
+		setTestResult(JSON.stringify(result, null, '\n'))
+	}
+
 	return (
 		<div class='builder-page section-card'>
 			<h1>Assignment Builder</h1>
@@ -82,6 +89,11 @@ export default () => {
 							/>
 						)}
 					</For>
+				</div>
+				<div class='label'>Test</div>
+				<div style='display: inline-block;'>
+					<button type='button' style='margin-right: 0.5rem;' onclick={() => run()}>Test run</button>
+					<output>{testResult()}</output>
 				</div>
 			</div>
 			<div class='form-group'>
