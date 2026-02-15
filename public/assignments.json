@@ -31,8 +31,8 @@
 			"id": "65ef374b-4bc6-4858-982a-39cc59d3feec",
 			"title": "The \"while\" loop",
 			"content": [
-				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that can be used to iterate over a range of values.\n * \n * The \"i\" variable is the counter variable. It is initialized to 0 and incremented by 1 on each iteration.\n * The \"i < 10\" condition is the condition that must be true in order to continue the loop.\n * The \"i++\" statement is the increment statement. It is executed after each iteration.\n * \n * The loop below could be read as: for as long as \"i < 10\", do the code inside the loop, and then increment \"i\" by 1 (i++).\n */\n\nlet answer = 0\nwhile (let i = 0; i < 10; i++) {",
-				"\tanswer += ",
+				"/**\n * Hello World 🧑‍💻\n *\n * The \"while\" loop is a loop that is used to iterate until it's condition is met.\n * \n * This loop will continue until condition \"answer < 10\" is true.\n * The loop could be read as: for as long as \"answer < 10\", do the code inside the loop.\n */\n\nlet i = 0\nlet answer = 0\nwhile (answer < 10) {",
+				"\tanswer += i\n\ti++",
 				"}\n\nanswer == 10"
 			],
 			"answer": true
