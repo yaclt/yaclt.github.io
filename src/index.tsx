@@ -7,6 +7,7 @@ import Assignment from './routes/Assignment.tsx'
 import Playground from './routes/Playground.tsx'
 import AssignmentBuilder from './routes/AssignmentBuilder.tsx'
 import './index.css'
+import CustomAssignments from './routes/CustomAssignments.tsx'
 
 if (!assignmentsReady) {
 	throw new Error('Assignments not ready')
@@ -36,6 +37,7 @@ render(() => (
 		<Route path='Assignment/*path' component={Assignment} />
 		<Route path='Playground' component={Playground} />
 		<Route path='builder/:assignmentId?' component={AssignmentBuilder} />
+		<Route path='CustomAssignments/*assignmentPaths' component={CustomAssignments} />
 		<Route path='*missingPage' component={Home} />
 	</Router>
 ), document.body!)
