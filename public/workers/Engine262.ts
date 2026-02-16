@@ -11,15 +11,30 @@ setSurroundingAgent(
 		},
 	}),
 )
-//
+
+function addJsonWrapper(script: string) {
+	const lines = script.split('\n')
+	const response = lines.pop()
+	script = lines.join('\n')
+	return script + `\nJSON.stringify(${response})`
+}
+
 let tickCounter = 0
 let thresholdChecker = 0
-const realm = new ManagedRealm({})
 
-function evaluate(script: string, threshold = 1_000_000) {
+function evaluate(script: string, measureTicks = false, threshold = 1_000_000) {
 	if (threshold <= 0) {
 		throw new Error('Threshold must be greater than 0')
 	}
+
+	tickCounter = 0
+	thresholdChecker = 0
+	const realm = new ManagedRealm({})
+
+	if (!measureTicks) {
+		script = addJsonWrapper(script)
+	}
+
 	thresholdChecker = threshold
 	const ticksAtStart = tickCounter
 	let result
@@ -31,8 +46,8 @@ function evaluate(script: string, threshold = 1_000_000) {
 		const raw = realm.evaluateScript(script) as Result
 		if (raw.Type === 'throw') {
 			error = raw.Value.ErrorData.value
-		} else {
-			result = raw.Value.value
+		} else if (!measureTicks) {
+			result = JSON.parse(raw.Value.value as string)
 		}
 	} catch (err) {
 		error = err
@@ -43,6 +58,7 @@ function evaluate(script: string, threshold = 1_000_000) {
 
 self.onmessage = (event: MessageEvent) => {
 	const { script } = event.data
-	const result = evaluate(script)
-	self.postMessage(result)
+	const { ticks, error: error1 } = evaluate(script, true)
+	const { result, error: error2 } = evaluate(script, false)
+	self.postMessage({ ticks, error: error1 || error2, result })
 }
