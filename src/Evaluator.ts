@@ -1,59 +1,66 @@
 import type { Language } from './types.tsx'
 
-type Result = { result: unknown; ticks: number; error: Error | unknown }
+type WorkerResult = { result: unknown; ticks: number; error: unknown }
+type Result = { result: unknown; ticks: number[]; error: unknown }
 
-function execute(worker: Worker, script: string): Promise<Result> {
-	let resolve = (_data: Result) => undefined
-	const promise = new Promise((r) => {
-		resolve = r as (data: Result) => undefined
+function execute(workerUrl: URL, script: string) {
+	let resolve!: (data: WorkerResult) => void
+	let reject!: (err: unknown) => void
+	const promise = new Promise<WorkerResult>((res, rej) => {
+		resolve = res
+		reject = rej
 	})
-	worker.postMessage({ script })
-	worker.onmessage = (event) => {
-		resolve(event.data)
+	const worker = new Worker(workerUrl, { type: 'module' })
+	worker.onerror = (event) => {
+		worker.terminate()
+		reject(event.error ?? new Error('Worker failed to load'))
 	}
-	return promise as Promise<Result>
+	worker.onmessage = () => {
+		worker.postMessage({ script })
+		worker.onmessage = (event) => {
+			worker.terminate()
+			resolve(event.data)
+		}
+	}
+	return promise
 }
 
 export default class {
-	static async evaluate(language: Language, script: string | string[]) {
-		let worker: Worker
+	static evaluate(language: Language, script: string[]): Promise<Result> {
+		let workerUrl: URL
 		switch (language) {
 			case 'JavaScript / TypeScript':
-				worker = new Worker(new URL('/workers/Engine262.ts', import.meta.url), { type: 'module' })
+				workerUrl = new URL('./workers/Engine262.ts', import.meta.url)
 				break
 			default:
 				throw new Error('Unsupported language')
 		}
 
-		if (typeof script === 'string') {
-			script = [script]
-		}
-
-		const ticks: number[] = []
-		const failedSegments: string[] = []
-		let result: unknown
-		let error: Error | unknown
-		let working = Promise.resolve()
+		let mergedSegments: string = ''
+		const promises: Promise<WorkerResult>[] = []
 		script.forEach((segment) => {
-			working = working.then(async () => {
-				let script = failedSegments.join('\n')
-				if (script) {
-					script += '\n'
-				}
-				script += segment
-				const res = await execute(worker, script)
-				ticks.push(res.ticks)
-				result = res.result
-				error = res.error
-				if (error) {
-					failedSegments.push(segment)
-				} else {
-					failedSegments.splice(0, failedSegments.length)
-				}
-			})
+			if (mergedSegments) {
+				mergedSegments += '\n'
+			}
+			mergedSegments += segment
+			promises.push(
+				new Promise((resolve) => {
+					execute(workerUrl, mergedSegments).then((res) => {
+						resolve(res)
+					})
+				}),
+			)
 		})
-		await working
-		worker.terminate()
-		return Promise.resolve({ result, ticks, error })
+		return Promise.all(promises).then((results: WorkerResult[]) => {
+			const result: Result = {
+				result: results.at(-1)?.result,
+				ticks: [],
+				error: results.at(-1)?.error,
+			}
+			results.forEach((r) => {
+				result.ticks.push(r.ticks - result.ticks.reduce((a, b) => a + b, 0))
+			})
+			return result
+		})
 	}
 }

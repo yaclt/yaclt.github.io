@@ -13,7 +13,7 @@ setSurroundingAgent(
 )
 
 function addJsonWrapper(script: string) {
-	const lines = script.split('\n')
+	const lines = script.trim().split('\n')
 	const response = lines.pop()
 	script = lines.join('\n')
 	return script + `\nJSON.stringify(${response})`
@@ -56,9 +56,15 @@ function evaluate(script: string, measureTicks = false, threshold = 1_000_000) {
 	return { result, ticks, error }
 }
 
-self.onmessage = (event: MessageEvent) => {
+onmessage = (event: MessageEvent) => {
 	const { script } = event.data
 	const { ticks, error: error1 } = evaluate(script, true)
+	if (error1) {
+		postMessage({ result: undefined, ticks, error: error1 })
+		return
+	}
 	const { result, error: error2 } = evaluate(script, false)
-	self.postMessage({ ticks, error: error1 || error2, result })
+	postMessage({ result, ticks, error: error1 || error2 })
 }
+
+postMessage(null)
