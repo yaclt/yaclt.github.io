@@ -1,1 +1,8 @@
 GitHub Pages 404
+<p>
+	Redirect to: <span id="redirect-to"></span>
+</p>
+<script>
+	//window.location.href = '/#'+window.location.href;
+	document.getElementById('redirect-to')?.innerHTML = '/#' + window.location.href
+</script>
