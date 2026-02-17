@@ -1,4 +1,4 @@
-import { A } from '@solidjs/router'
+import { A, useNavigate } from '@solidjs/router'
 import { type Accessor, createSignal, For, Show } from 'solid-js'
 import { Assignment, Label, PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION } from '../types.tsx'
 
@@ -24,6 +24,10 @@ function passedAssignmentWatcher() {
 passedAssignmentWatcher()
 
 export default () => {
+	if (location.hash.startsWith('#/')) {
+		useNavigate()(location.hash.slice(1))
+	}
+
 	function init(todo: boolean) {
 		const result: Record<string, Record<string, Assignment[]>> = {}
 		Object.entries(Assignment.assignments).filter(([language, labels]) => {
