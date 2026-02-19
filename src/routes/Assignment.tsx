@@ -140,7 +140,7 @@ export default () => {
 							<Show when={passed()}>
 								<span aria-hidden='true'>✅</span> Passed —{' '}
 							</Show>
-							Result: <output>{result()?.toString()}</output>
+							Result:<output style='display: inline-flex; margin-left: 0.55em; white-space: pre-wrap;'>{result()?.toString()}</output>
 						</p>
 					</div>
 					<Show when={passed()}>
