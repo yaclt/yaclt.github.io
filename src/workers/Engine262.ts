@@ -14,8 +14,10 @@ setSurroundingAgent(
 
 function addJsonWrapper(script: string) {
 	const lines = script.trim().split('\n')
-	const response = lines.pop()
-	script = lines.join('\n')
+	const lastLine = lines.pop()!
+	const statements = lastLine.split(';')
+	const response = statements.pop()!
+	script = lines.join('\n') + statements.join(';')
 	return script + `\nJSON.stringify(${response})`
 }
 
