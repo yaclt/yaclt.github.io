@@ -3,6 +3,12 @@ import type { Language } from './types.tsx'
 type WorkerResult = { result: unknown; ticks: number; error: unknown }
 type Result = { result: unknown; ticks: number[]; error: unknown }
 
+function getWorker(language: Language) {
+	if (language !== 'JavaScript / TypeScript') {
+		throw new Error('Unsupported language')
+	}
+	return new Worker(new URL('./workers/Engine262.ts', import.meta.url), { type: 'module' })
+}
 function execute(language: Language, script: string) {
 	let resolve!: (data: WorkerResult) => void
 	let reject!: (err: unknown) => void
@@ -10,10 +16,7 @@ function execute(language: Language, script: string) {
 		resolve = res
 		reject = rej
 	})
-	if (language !== 'JavaScript / TypeScript') {
-		throw new Error('Unsupported language')
-	}
-	const worker = new Worker(new URL('./workers/Engine262.ts', import.meta.url), { type: 'module' })
+	const worker = getWorker(language)
 	worker.onerror = (event) => {
 		worker.terminate()
 		reject(event.error ?? new Error('Worker failed to load'))
