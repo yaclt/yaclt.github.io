@@ -23,8 +23,10 @@ function addAssignments(data: [
 				id: string
 				title: string
 				segments: string[]
-				inputs: string[][]
-				answers: (number | string | boolean | null | object)[]
+				validation: {
+					inputs?: string[]
+					answer: number | string | boolean | null | object
+				}[]
 			}[]
 		}[]
 	},

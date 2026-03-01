@@ -84,8 +84,10 @@ export class Assignment {
 		get: Accessor<string>
 		set: (value: string) => void
 	}[]
-	#_inputs: string[][]
-	#_answers: (number | string | boolean | null | object)[]
+	#_validation: {
+		inputs?: string[]
+		answer: number | string | boolean | null | object
+	}[]
 	#_hashKey: string = ''
 	#_passed: Pass = 'no'
 	get hashKey(): string {
@@ -129,11 +131,11 @@ export class Assignment {
 		segments?.forEach((segment, index) => {
 			script[index * 2 + 1] = segment
 		})
-		this.#_inputs.forEach((inputs, index) => {
+		this.#_validation.forEach((validation, index) => {
 			promises.push(
 				Promise.resolve().then(async () => {
-					const answer = this.#_answers[index]
-					const { result: res, ticks: tic, error: err } = await Evaluator.evaluate(this.#_language, script, inputs)
+					const answer = validation.answer
+					const { result: res, ticks: tic, error: err } = await Evaluator.evaluate(this.#_language, script, validation.inputs ?? [])
 					if (res === undefined) {
 						passed.push(false)
 					} else if (![typeof answer, typeof res].find((type) => type !== 'object')) {
@@ -177,8 +179,10 @@ export class Assignment {
 			id: string
 			title: string
 			segments: string[]
-			inputs: string[][]
-			answers: (number | string | boolean | null | object)[]
+			validation: {
+				inputs?: string[]
+				answer: number | string | boolean | null | object
+			}[]
 		},
 	) {
 		data = structuredClone(data)
@@ -192,15 +196,11 @@ export class Assignment {
 		if (data.segments.length < 2) {
 			throw new Error('All assignments must at least have one segment to setup the assignment with optional inputs and then one for the user to write the code to solve the assignment.')
 		}
-		if (data.inputs.length !== data.answers.length) {
-			throw new Error('All assignments must have the same number of inputs and answers')
-		}
 		this.#_id = new UniqueID(data.id)
 		this.#_title = data.title
 		this.#_label = label
 		this.#_language = language
-		this.#_inputs = data.inputs
-		this.#_answers = data.answers
+		this.#_validation = data.validation
 		this.#_segments = []
 		data.segments.forEach((segment, index) => {
 			const [segmentSignal, setSegmentSignal] = createSignal(segment)
