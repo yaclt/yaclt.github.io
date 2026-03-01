@@ -1,20 +1,18 @@
 import { createSignal, createUniqueId, For, type Signal } from 'solid-js'
 import { useParams } from '@solidjs/router'
-import { Assignment } from '../types.tsx'
-import type { Result } from '../Evaluator.ts'
+import { Assignment, type ValidationResult } from '../types.tsx'
 import Evaluator from '../Evaluator.ts'
-
+import { Show } from 'solid-js'
 export default () => {
 	const params = useParams()
 	const assignmentId = params.assignmentId ?? crypto.randomUUID()
-
+	const assignment = Assignment.getAssignment(assignmentId)
 	const codes: Signal<string>[] = []
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
 	const [code, setCode] = createSignal('')
-	const [testResult, setTestResult] = createSignal<Result>()
+	const [testResult, setTestResult] = createSignal<ValidationResult>()
 	if (params.assignmentId) {
-		const assignment = Assignment.getAssignment(assignmentId)
 		if (assignment) {
 			setSegments(assignment.segments.length)
 			setTimeout(() => {
@@ -60,9 +58,16 @@ export default () => {
 		})
 	}
 
-	async function run() {
-		const result = await Evaluator.evaluate('JavaScript / TypeScript', codes.map((code) => JSON.parse(code[0]())), [])
-		setTestResult(result)
+	function run() {
+		let result: Promise<ValidationResult>
+		const segments = codes.map((code) => JSON.parse(code[0]()))
+		if (assignment) {
+			result = assignment.validate(segments.filter((_, index) => index % 2 === 1))
+		} else {
+			result = Evaluator.evaluate('JavaScript / TypeScript', segments, [])
+				.then((result) => ({ ...result, passed: 'no' }))
+		}
+		result.then(setTestResult)
 	}
 
 	return (
@@ -92,6 +97,12 @@ export default () => {
 					</For>
 				</div>
 				<output>{JSON.stringify(testResult(), null, '\t')}</output>
+				<Show when={testResult()?.passed === 'partial'}>
+					<div>⚠️ Partial validation</div>
+				</Show>
+				<Show when={testResult()?.passed === 'yes'}>
+					<div>✅ Valid</div>
+				</Show>
 				<output>
 					<pre>{testResult()?.result?.toString()}</pre>
 				</output>
