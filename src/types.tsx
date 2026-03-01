@@ -2,6 +2,7 @@ import { createStore } from 'solid-js/store'
 import { createSignal } from 'solid-js'
 import type { Accessor } from 'solid-js'
 import Evaluator from './Evaluator.ts'
+import type { Result } from './Evaluator.ts'
 
 export const LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT = 'passed_assignment_:'
 export const PASSED_ASSIGNMENTS_BEFORE_CURRENT_SESSION: Assignment[] = []
@@ -73,6 +74,7 @@ const [assignments, setAssignments] = createStore<Record<Language, Record<string
 	'JavaScript / TypeScript': {},
 })
 const flatAssignments: Assignment[] = []
+export type ValidationResult = Result & { passed: Pass }
 export class Assignment {
 	#_id: UniqueID
 	#_title: string
@@ -117,17 +119,21 @@ export class Assignment {
 	get passed() {
 		return this.#_passed
 	}
-	async validate() {
+	async validate(segments?: string[]): Promise<ValidationResult> {
 		let result: unknown = undefined
 		let ticks: number[] = []
 		let error: unknown = undefined
 		const passed: boolean[] = []
 		const promises: Promise<void>[] = []
+		const script: string[] = this.#_segments.map((segment) => segment.get())
+		segments?.forEach((segment, index) => {
+			script[index * 2 + 1] = segment
+		})
 		this.#_inputs.forEach((inputs, index) => {
 			promises.push(
 				Promise.resolve().then(async () => {
 					const answer = this.#_answers[index]
-					const { result: res, ticks: tic, error: err } = await Evaluator.evaluate(this.#_language, this.#_segments.map((segment) => segment.get()), inputs)
+					const { result: res, ticks: tic, error: err } = await Evaluator.evaluate(this.#_language, script, inputs)
 					if (res === undefined) {
 						passed.push(false)
 					} else if (![typeof answer, typeof res].find((type) => type !== 'object')) {
