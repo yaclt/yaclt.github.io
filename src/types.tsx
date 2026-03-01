@@ -64,7 +64,7 @@ export class Label {
 	}
 	constructor(name: string, prerequisites: Label[]) {
 		this.#_name = name
-		this.#_prerequisites = structuredClone(prerequisites)
+		this.#_prerequisites = prerequisites
 		labels.push(this)
 	}
 }
