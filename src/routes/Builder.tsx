@@ -6,7 +6,7 @@ import { Show } from 'solid-js'
 export default () => {
 	const params = useParams()
 	const assignmentId = params.assignmentId ?? crypto.randomUUID()
-	const assignment = Assignment.getAssignment(assignmentId)
+	const assignment = params.assignmentId ? Assignment.getAssignment(assignmentId) : null
 	const codes: Signal<string>[] = []
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
