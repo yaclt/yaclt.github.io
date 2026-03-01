@@ -64,7 +64,7 @@ export class Label {
 	}
 	constructor(name: string, prerequisites: Label[]) {
 		this.#_name = name
-		this.#_prerequisites = prerequisites
+		this.#_prerequisites = structuredClone(prerequisites)
 		labels.push(this)
 	}
 }
@@ -175,7 +175,6 @@ export class Assignment {
 			answers: (number | string | boolean | null | object)[]
 		},
 	) {
-		label = structuredClone(label)
 		data = structuredClone(data)
 		if (
 			!data.id.match(

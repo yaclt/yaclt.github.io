@@ -1,6 +1,7 @@
 import { createSignal, createUniqueId, For, type Signal } from 'solid-js'
 import { useParams } from '@solidjs/router'
 import { Assignment } from '../types.tsx'
+import type { Result } from '../Evaluator.ts'
 import Evaluator from '../Evaluator.ts'
 
 export default () => {
@@ -11,7 +12,7 @@ export default () => {
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
 	const [code, setCode] = createSignal('')
-	const [testResult, setTestResult] = createSignal('')
+	const [testResult, setTestResult] = createSignal<Result>()
 	if (params.assignmentId) {
 		const assignment = Assignment.getAssignment(assignmentId)
 		if (assignment) {
@@ -44,6 +45,7 @@ export default () => {
 			codeList.push(code[0]())
 		})
 		setCode('[\n' + codeList.join(',\n') + '\n]')
+		run()
 	}
 
 	function updateCodeFromTextarea(rawValue: string) {
@@ -60,7 +62,7 @@ export default () => {
 
 	async function run() {
 		const result = await Evaluator.evaluate('JavaScript / TypeScript', codes.map((code) => JSON.parse(code[0]())), [])
-		setTestResult(JSON.stringify(result, null, '\n'))
+		setTestResult(result)
 	}
 
 	return (
@@ -89,11 +91,10 @@ export default () => {
 						)}
 					</For>
 				</div>
-				<div class='label'>Test</div>
-				<div style='display: inline-block;'>
-					<button type='button' style='margin-right: 0.5rem;' onclick={() => run()}>Test run</button>
-					<output>{testResult()}</output>
-				</div>
+				<output>{JSON.stringify(testResult(), null, '\t')}</output>
+				<output>
+					<pre>{testResult()?.result?.toString()}</pre>
+				</output>
 			</div>
 			<div class='form-group'>
 				<div class='label'>Generated code (JSON)</div>

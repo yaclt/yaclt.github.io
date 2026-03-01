@@ -1,7 +1,7 @@
 import type { Language } from './types.tsx'
 
 type WorkerResult = { result: unknown; ticks: number; error: unknown }
-type Result = { result: unknown; ticks: number[]; error: unknown }
+export type Result = { result: unknown; ticks: number[]; error: unknown }
 
 function getWorker(language: Language) {
 	if (language !== 'JavaScript / TypeScript') {
