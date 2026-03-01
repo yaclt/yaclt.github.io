@@ -22,11 +22,13 @@
 				"answer = ",
 				"answer"
 			],
-			"inputs": [
-				["3", "7"],
-				["5", "9"]
-			],
-			"answers": [10, 14]
+			"validation": [{
+				"inputs": ["3", "7"],
+				"answer": 10
+			}, {
+				"inputs": ["5", "9"],
+				"answer": 14
+			}]
 		}]
 	}, {
 		"name": "Fundamentals",
@@ -40,8 +42,9 @@
 				"\tanswer += ",
 				"}\n\nanswer == 10"
 			],
-			"inputs": [[]],
-			"answers": [true]
+			"validation": [{
+				"answer": true
+			}]
 		}, {
 			"id": "65ef374b-4bc6-4858-982a-39cc59d3feec",
 			"title": "The \"while\" loop",
@@ -50,8 +53,9 @@
 				"\tanswer += i",
 				"}\n\nanswer == 10"
 			],
-			"inputs": [[]],
-			"answers": [true]
+			"validation": [{
+				"answer": true
+			}]
 		}, {
 			"id": "62579674-5c57-4367-b27c-03b20a81ab12",
 			"title": "The Math namespace",
@@ -60,8 +64,9 @@
 				"",
 				"answer"
 			],
-			"inputs": [[]],
-			"answers": [9.869604401089358]
+			"validation": [{
+				"answer": 9.869604401089358
+			}]
 		}]
 	}]
 }]
