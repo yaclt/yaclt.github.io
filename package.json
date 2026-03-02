@@ -4,9 +4,12 @@
 	"version": "0.0.0",
 	"type": "module",
 	"dependencies": {
+		"@codemirror/lang-javascript": "^6.2.5",
 		"@deno/vite-plugin": "^1.0.6",
 		"@magic-works/engine262": "^0.0.1-86373defd8d1a8980cb95055359231e1b2a45782",
 		"@solidjs/router": "^0.15.4",
+		"codemirror": "^6.0.2",
+		"codemirror-readonly-ranges": "^0.1.0-alpha.2",
 		"solid-js": "^1.9.11"
 	},
 	"devDependencies": {

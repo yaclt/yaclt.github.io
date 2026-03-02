@@ -1,17 +1,29 @@
 import { useParams } from '@solidjs/router'
-import { createMemo, createSignal, createUniqueId, ErrorBoundary, For, Show } from 'solid-js'
+import { createMemo, createSignal, ErrorBoundary, For, Show } from 'solid-js'
 import { A } from '@solidjs/router'
 import { Assignment, AssignmentNotFoundError, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, type Pass, USER_ID } from '../types.tsx'
+import { basicSetup, EditorView } from 'codemirror'
+import { javascript, javascriptLanguage, scopeCompletionSource } from '@codemirror/lang-javascript'
+import readOnlyRangesExtension from 'codemirror-readonly-ranges'
+import { EditorState } from '@codemirror/state'
 
 export default () => {
 	const params = useParams()
 	const [result, setResult] = createSignal()
 	const [ticks, setTicks] = createSignal<number[]>([])
 	const [passed, setPassed] = createSignal<Pass>('no')
-	const [codeCellsWidth, setCodeCellsWidth] = createSignal(0)
+	const [prefixLines, setPrefixLines] = createSignal(0)
+	const [suffixLines, setSuffixLines] = createSignal(0)
+	const [prefixChars, setPrefixChars] = createSignal(0)
+	const [suffixChars, setSuffixChars] = createSignal(0)
 	const assignment = createMemo(() => {
 		const assignmentKey = params.path?.split('/').at(-1) ?? ''
 		const assignment = Assignment.getAssignment(assignmentKey)
+		setPrefixLines(assignment.segments[0].get().split('\n').length)
+		setSuffixLines(assignment.segments.filter((_s, index) => 1 < index).map((s) => s.get()).join('\n').split('\n').length)
+		setPrefixChars(assignment.segments[0].get().length + 1)
+		setSuffixChars(assignment.segments.filter((_s, index) => 1 < index).map((s) => s.get()).join('\n').length + 1)
+
 		const passedAssignment = localStorage.getItem(`${LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT}${assignment.hashKey}`)
 		if (passedAssignment) {
 			const passedAssignmentSegments = JSON.parse(passedAssignment)
@@ -25,6 +37,38 @@ export default () => {
 			setTicks(assignment.segments.map(() => -1))
 		}
 		return assignment
+	})
+	const getReadOnlyRanges = (targetState: EditorState): Array<{ from: number | undefined; to: number | undefined }> => {
+		return [
+			{
+				from: undefined,
+				to: targetState.doc.line(prefixLines()).to,
+			},
+			{
+				from: targetState.doc.line(targetState.doc.lines - suffixLines() + 1).from,
+				to: undefined,
+			},
+		]
+	}
+	const editor = new EditorView({
+		doc: assignment()?.segments.map((s) => s.get()).join('\n'),
+		extensions: [
+			basicSetup,
+			javascript(),
+			javascriptLanguage.data.of({
+				autocomplete: scopeCompletionSource(globalThis),
+			}),
+			readOnlyRangesExtension(getReadOnlyRanges),
+			EditorView.updateListener.of((update) => {
+				if (!update.docChanged) return
+				const doc = update.state.doc.toString()
+				const a = assignment()
+				if (!a) return
+				const userCode = doc.slice(prefixChars(), -suffixChars())
+				a.segments[1].set(userCode)
+				validate()
+			}),
+		],
 	})
 	function error(err: Error) {
 		switch (err.constructor) {
@@ -45,7 +89,6 @@ export default () => {
 		}
 	}
 	function updateCodeCells() {
-		setCodeCellsWidth(Math.max(...[...document.getElementsByClassName('code-cell-input')].map((e) => e.scrollWidth)))
 		const codeCells = [...document.getElementsByClassName('code-cell')] as HTMLElement[]
 		const tickCells = [...document.getElementsByClassName('tick-cell')] as HTMLElement[]
 		codeCells.forEach((codeCell, index) => {
@@ -62,8 +105,7 @@ export default () => {
 	setTimeout(updateCodeCells)
 	let nextValidation = Promise.resolve()
 	let latestValidationId = 0
-	async function validate(value: string, set: (value: string) => void) {
-		set(value)
+	async function validate() {
 		updateCodeCells()
 		const a = assignment()
 		if (!a) return
@@ -111,23 +153,7 @@ export default () => {
 				<ErrorBoundary fallback={error}>
 					<div class='code-grid'>
 						<div class='code-cells'>
-							<For each={[...assignment()?.segments]}>
-								{(segment, index) => (
-									<div class='code-cell'>
-										<textarea
-											id={createUniqueId()}
-											class='code-cell-input'
-											style={{ width: `${codeCellsWidth()}px` }}
-											wrap='off'
-											rows={segment?.get().split('\n').length}
-											disabled={index() % 2 === 0}
-											value={segment.get()}
-											onInput={(e) => validate(e.target.value, segment.set)}
-											spellcheck={false}
-										/>
-									</div>
-								)}
-							</For>
+							{editor.dom}
 						</div>
 						<div class='tick-cells'>
 							<div class='tick-cell'>Ticks</div>

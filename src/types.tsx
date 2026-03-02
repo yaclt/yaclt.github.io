@@ -210,7 +210,7 @@ export class Assignment {
 			} = {
 				get: () => segmentSignal(),
 				set: (value) => {
-					if (index % 2 === 0) {
+					if (index !== 1) {
 						throw new Error('Cannot set a read-only segment')
 					}
 					setSegmentSignal(value)
