@@ -12,8 +12,9 @@
 				"answer = ",
 				"a + b == answer"
 			],
-			"inputs": [[]],
-			"answers": [true]
+			"validation": [{
+				"answer": true
+			}]
 		}, {
 			"id": "0392b1cc-c0d5-40d4-aac9-fd70f7d5df43",
 			"title": "prompt and parseFloat",
