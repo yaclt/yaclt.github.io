@@ -6,7 +6,15 @@ import { Show } from 'solid-js'
 export default () => {
 	const params = useParams()
 	const assignmentId = params.assignmentId ?? crypto.randomUUID()
-	const assignment = params.assignmentId ? Assignment.getAssignment(assignmentId) : null
+	const assignment = params.assignmentId
+		? (() => {
+			try {
+				return Assignment.getAssignment(assignmentId)
+			} catch (_error) {
+				return null
+			}
+		})()
+		: null
 	const codes: Signal<string>[] = []
 	const segmentsInputId = createUniqueId()
 	const [segments, setSegments] = createSignal(1)
@@ -77,40 +85,46 @@ export default () => {
 				<div class='label'>Assignment ID</div>
 				<input type='text' value={assignmentId} readOnly />
 			</div>
-			<div class='form-group'>
-				<div class='label'>Number of segments</div>
-				<input id={segmentsInputId} type='number' min={1} value={segments()} onChange={(e) => setSegments(e.target.valueAsNumber)} />
-			</div>
-			<div class='form-group'>
-				<div class='label'>Segment content</div>
-				<div class='code-cells' style='display: flex; flex-direction: column;'>
-					<For each={Array.from({ length: segments() })}>
-						{(_, index) => (
-							<textarea
-								id={'segment_' + index().toString()}
-								class='code-cell'
-								wrap='off'
-								onInput={(e) => updateCode(e.target)}
-								placeholder={`Segment ${index() + 1}`}
-							/>
-						)}
-					</For>
+			<Show when={params.assignmentId && !assignment}>
+				<div>Assignment not found</div>
+				<button type='button' onClick={() => location.href = '/builder'}>Leave assignment</button>
+			</Show>
+			<Show when={!params.assignmentId || assignment}>
+				<div class='form-group'>
+					<div class='label'>Number of segments</div>
+					<input id={segmentsInputId} type='number' min={1} value={segments()} onChange={(e) => setSegments(e.target.valueAsNumber)} />
 				</div>
-				<output>{JSON.stringify(testResult(), null, '\t')}</output>
-				<Show when={testResult()?.passed === 'partial'}>
-					<div>⚠️ Partial validation</div>
-				</Show>
-				<Show when={testResult()?.passed === 'yes'}>
-					<div>✅ Valid</div>
-				</Show>
-				<output>
-					<pre>{testResult()?.result?.toString()}</pre>
-				</output>
-			</div>
-			<div class='form-group'>
-				<div class='label'>Generated code (JSON)</div>
-				<textarea value={code()} onInput={(e) => updateCodeFromTextarea(e.target.value)} />
-			</div>
+				<div class='form-group'>
+					<div class='label'>Segment content</div>
+					<div class='code-cells' style='display: flex; flex-direction: column;'>
+						<For each={Array.from({ length: segments() })}>
+							{(_, index) => (
+								<textarea
+									id={'segment_' + index().toString()}
+									class='code-cell'
+									wrap='off'
+									onInput={(e) => updateCode(e.target)}
+									placeholder={`Segment ${index() + 1}`}
+								/>
+							)}
+						</For>
+					</div>
+					<output>{JSON.stringify(testResult(), null, '\t')}</output>
+					<Show when={testResult()?.passed === 'partial'}>
+						<div>⚠️ Partial validation</div>
+					</Show>
+					<Show when={testResult()?.passed === 'yes'}>
+						<div>✅ Valid</div>
+					</Show>
+					<output>
+						<pre>{testResult()?.result?.toString()}</pre>
+					</output>
+				</div>
+				<div class='form-group'>
+					<div class='label'>Generated code (JSON)</div>
+					<textarea value={code()} onInput={(e) => updateCodeFromTextarea(e.target.value)} />
+				</div>
+			</Show>
 		</div>
 	)
 }

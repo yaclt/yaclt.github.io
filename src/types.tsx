@@ -161,10 +161,10 @@ export class Assignment {
 	static get assignments() {
 		return assignments
 	}
-	static getAssignment(key: string) {
-		const assignment = flatAssignments.find((assignment) => assignment.id.id === key)
+	static getAssignment(id: string) {
+		const assignment = flatAssignments.find((assignment) => assignment.id.id === id)
 		if (!assignment) {
-			throw new AssignmentNotFoundError(key)
+			throw new AssignmentNotFoundError(id)
 		}
 		return assignment
 	}
