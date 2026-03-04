@@ -4,6 +4,7 @@ import { A } from '@solidjs/router'
 import { Assignment, AssignmentNotFoundError, LOCAL_STORAGE_PREFIX_PASSED_ASSIGNMENT, type Pass, USER_ID } from '../types.tsx'
 import { basicSetup, EditorView } from 'codemirror'
 import { javascript, javascriptLanguage, scopeCompletionSource } from '@codemirror/lang-javascript'
+import { layer, RectangleMarker, type ViewUpdate } from '@codemirror/view'
 import readOnlyRangesExtension from 'codemirror-readonly-ranges'
 
 export default () => {
@@ -56,6 +57,37 @@ export default () => {
 						to: undefined,
 					},
 				]
+			}),
+			layer({
+				above: false,
+				class: 'cm-readonly-layer',
+				update(update: ViewUpdate) {
+					return update.docChanged || update.viewportChanged
+				},
+				markers(view) {
+					const { doc } = view.state
+					const totalLines = doc.lines
+					const prefix = prefixLines()
+					const suffix = suffixLines()
+					const markers: RectangleMarker[] = []
+					const padding = 4
+					if (prefix > 0) {
+						const startBlock = view.lineBlockAt(doc.line(1).from)
+						const endBlock = view.lineBlockAt(doc.line(prefix).to - 1)
+						markers.push(
+							new RectangleMarker('cm-readonly-layer', 0, startBlock.top, view.scrollDOM.clientWidth, endBlock.bottom - startBlock.top + padding),
+						)
+					}
+					if (suffix > 0 && prefix + 1 <= totalLines) {
+						const startLine = totalLines - suffix + 1
+						const startBlock = view.lineBlockAt(doc.line(startLine).from)
+						const endBlock = view.lineBlockAt(doc.length)
+						markers.push(
+							new RectangleMarker('cm-readonly-layer', 0, startBlock.top + padding, view.scrollDOM.clientWidth, endBlock.bottom - startBlock.top + padding),
+						)
+					}
+					return markers
+				},
 			}),
 			EditorView.updateListener.of((update) => {
 				if (!update.docChanged) return

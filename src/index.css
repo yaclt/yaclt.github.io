@@ -265,6 +265,10 @@ a:hover {
 	transform: rotate(180deg);
 }
 
+.cm-readonly-layer {
+	background: rgba(0, 0, 0, 0.1);
+}
+
 /* Assignment page */
 .assignment-page {
 	max-width: 900px;
@@ -322,50 +326,12 @@ a:hover {
 }
 
 /* Stack textareas flush so they read as one document; scroll on parent .code-cells only */
-.assignment-page .code-cells .code-cell textarea {
-	border-radius: 0;
-	overflow: hidden;
-	scrollbar-width: none;
-	white-space: pre;
-}
-.assignment-page .code-cells .code-cell textarea::-webkit-scrollbar {
-	display: none;
-}
-
 .code-grid .tick-cell {
 	font-size: 0.85rem;
 	color: var(--color-text-muted);
 	font-variant-numeric: tabular-nums;
 	text-align: right;
 	min-width: 3ch;
-}
-
-.assignment-page textarea {
-	display: block;
-	width: 100%;
-	margin: 0;
-	font-family: var(--font-mono);
-	font-size: 0.9rem;
-	line-height: 1.5;
-	tab-size: 4;
-	resize: none;
-	scrollbar-width: thin;
-	background: var(--color-code-bg);
-	color: var(--color-code-text);
-	border: 1px solid var(--color-code-border);
-	border-radius: var(--radius-sm);
-	transition: border-color 0.15s, box-shadow 0.15s;
-}
-
-.assignment-page textarea:focus {
-	outline: none;
-	border-color: var(--color-accent);
-	box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
-}
-
-.assignment-page textarea:disabled {
-	opacity: 0.85;
-	cursor: default;
 }
 
 .result-area {
@@ -486,7 +452,6 @@ a:hover {
 	width: 100%;
 	font-family: var(--font-mono);
 	font-size: 0.9rem;
-	tab-size: 4;
 	border: 1px solid var(--color-border);
 	border-radius: var(--radius-sm);
 	background: var(--color-surface);
