@@ -198,6 +198,7 @@ export default () => {
 							</For>
 						</div>
 					</div>
+					<b>Result</b>
 					<div class='result-area' classList={{ success: passed() === 'yes', partial: passed() === 'partial' }}>
 						<p style='margin: 0;'>
 							<Show when={passed() === 'yes'}>
@@ -206,7 +207,7 @@ export default () => {
 							<Show when={passed() === 'partial'}>
 								<span aria-hidden='true'>🟡</span> Partial pass, answer is not generic —{' '}
 							</Show>
-							Result:<output style='display: inline-flex; margin-left: 0.55em; white-space: pre-wrap;'>{result()?.toString()}</output>
+							<output style='display: inline-flex; margin-left: 0.55em; white-space: pre-wrap;'>{result()?.toString()}</output>
 						</p>
 					</div>
 					<Show when={passed() === 'yes'}>
