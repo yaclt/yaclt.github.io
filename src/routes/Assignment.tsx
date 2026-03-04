@@ -5,7 +5,6 @@ import { Assignment, AssignmentNotFoundError, LOCAL_STORAGE_PREFIX_PASSED_ASSIGN
 import { basicSetup, EditorView } from 'codemirror'
 import { javascript, javascriptLanguage, scopeCompletionSource } from '@codemirror/lang-javascript'
 import readOnlyRangesExtension from 'codemirror-readonly-ranges'
-import { EditorState } from '@codemirror/state'
 
 export default () => {
 	const params = useParams()
@@ -38,18 +37,6 @@ export default () => {
 		}
 		return assignment
 	})
-	const getReadOnlyRanges = (targetState: EditorState): Array<{ from: number | undefined; to: number | undefined }> => {
-		return [
-			{
-				from: undefined,
-				to: targetState.doc.line(prefixLines()).to,
-			},
-			{
-				from: targetState.doc.line(targetState.doc.lines - suffixLines() + 1).from,
-				to: undefined,
-			},
-		]
-	}
 	const editor = new EditorView({
 		doc: assignment()?.segments.map((s) => s.get()).join('\n'),
 		extensions: [
@@ -58,7 +45,18 @@ export default () => {
 			javascriptLanguage.data.of({
 				autocomplete: scopeCompletionSource(globalThis),
 			}),
-			readOnlyRangesExtension(getReadOnlyRanges),
+			readOnlyRangesExtension((targetState) => {
+				return [
+					{
+						from: undefined,
+						to: targetState.doc.line(prefixLines()).to,
+					},
+					{
+						from: targetState.doc.line(targetState.doc.lines - suffixLines() + 1).from,
+						to: undefined,
+					},
+				]
+			}),
 			EditorView.updateListener.of((update) => {
 				if (!update.docChanged) return
 				const doc = update.state.doc.toString()
