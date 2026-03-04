@@ -13,6 +13,12 @@ if (!assignmentsReady) {
 	throw new Error('Assignments not ready')
 }
 
+document.addEventListener('keydown', (keyboardEvent) => {
+	if ((keyboardEvent.ctrlKey || keyboardEvent.metaKey) && keyboardEvent.key === 's') { // Prevent the Save dialog to open
+		keyboardEvent.preventDefault()
+	}
+})
+
 const root = (props: RouteSectionProps<unknown>) => (
 	<div class='app-root'>
 		<header class='app-header'>
